@@ -154,11 +154,18 @@ MainWindow::MainWindow(QWidget *parent)
     zoomGroup->addAction(z1);
     zoomGroup->addAction(z2);
     zoomGroup->addAction(z3);
-    int zoomType = settings.value("graphWidgetScaleFactor", 1).toInt();
-    if (zoomType == 0) m_graphWidget->setScaleFactor(1);
-    else if (zoomType == 1) m_graphWidget->setScaleFactor(0.15);
-    else m_graphWidget->setScaleFactor(0);
-    zoomGroup->actions()[zoomType]->setChecked(true);
+    double zoomType = settings.value("graphWidgetScaleFactor", 0.15).toDouble();
+    if (zoomType > 0.999) {
+        m_graphWidget->setScaleFactor(1);
+        z1->setChecked(true);
+    }
+    else if (zoomType < 0.001) {
+        m_graphWidget->setScaleFactor(0);
+        z3->setChecked(true);
+    } else {
+        m_graphWidget->setScaleFactor(0.15);
+        z2->setChecked(true);
+    }
 
     m_leftAxisMenu = viewMenu->addMenu(themedIcon(":/borderLeft"), "Left Axis");
     auto leftAxisLabel = m_leftAxisMenu->addAction("Label"); leftAxisLabel->setCheckable(true); leftAxisLabel->setData(Plot::Axis::Label);

@@ -42,7 +42,7 @@ void PointCloud::render(QPainter & painter)
 
         for (auto col : m_data->colorZOrder()) {
             std::for_each(std::execution::seq, items.begin(), items.end(), [&](const auto & p) {
-                if (m_data->fuzzyColor(p).weight(col) > 0.9999999) {
+                if (m_data->fuzzyColor(p).dominantComponent() == col) { // it's not clear if this will be slower than just asking if the weight of col > 1.0/m_data->colorComponentCount() [which risks repainting each droplet multiple times when there is a lot of fuzziness in the graph; alternative, keep track of which have been painted and and only paint once per droplet?]
                     auto pt = m_data->point(p);
                     if (m_roundSVGMarkers) {
                         painter.setBrush(QColor::fromRgb(m_data->rgba(p)));
@@ -58,7 +58,8 @@ void PointCloud::render(QPainter & painter)
 
         for (auto col : m_data->colorZOrder()) {
             std::for_each(std::execution::par_unseq, items.begin(), items.end(), [&](const auto & p) {
-                if (m_data->fuzzyColor(p).weight(col) >= limit) {
+                //if (m_data->fuzzyColor(p).dominantComponent() == col) {
+                if (m_data->fuzzyColor(p).weight(col) > limit) {
                     auto pt = m_data->point(p);
                     drawSquare(S, S2, m_xAxis->pixel(pt.x()) * dpr, m_yAxis->pixel(pt.y()) * dpr, m_data->rgba(p), m_pixelData);
                 }
