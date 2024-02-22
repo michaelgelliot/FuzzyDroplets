@@ -118,7 +118,7 @@ void Data::updateRgba()
         const auto baseColors = m_colorScheme->colors(0, m_colorComponentCount - 1);
 
 #ifndef Q_OS_MACOS
-        auto iota = std::ranges::views::iota(0, m_points.size());
+        auto iota = std::ranges::views::iota((size_t)0, m_points.size());
         std::for_each(std::execution::par, iota.begin(), iota.end(), [&](size_t j) {
 #else
         QList<size_t> iota(m_points.size(), 0);
@@ -181,7 +181,7 @@ void Data::setColorComponentCount(size_t count)
         m_colorComponentCount = count;
         auto baseColors = m_colorScheme->colors(0, m_colorComponentCount - 1);
 #ifndef Q_OS_MACOS
-        auto iota = std::ranges::views::iota(0, m_colors.size());
+        auto iota = std::ranges::views::iota((size_t)0, m_colors.size());
         std::for_each(std::execution::par, iota.begin(), iota.end(), [&](size_t i) {
 #else
         QList<size_t> iota(m_colors.size(), 0);
@@ -261,12 +261,12 @@ std::vector<Point> Data::centroidsByFuzzyColor(SelectionType type, std::vector<d
     std::vector<WeightedArithmeticMean<Point>> means(m_colorComponentCount);
 
 #ifndef Q_OS_MACOS
-        auto iota = std::ranges::views::iota(0, m_colorComponentCount);
-        std::for_each(std::execution::par, iota.begin(), iota.end(), [&](size_t k) {
+    auto iota = std::ranges::views::iota((size_t)0, m_colorComponentCount);
+    std::for_each(std::execution::par, iota.begin(), iota.end(), [&](size_t k) {
 #else
-        QList<size_t> iota(m_colorComponentCount, 0);
-        std::iota(iota.begin(), iota.end(), 0);
-        QtConcurrent::blockingMap(iota.begin(), iota.end(), [&](const size_t & k) {
+    QList<size_t> iota(m_colorComponentCount, 0);
+    std::iota(iota.begin(), iota.end(), 0);
+    QtConcurrent::blockingMap(iota.begin(), iota.end(), [&](const size_t & k) {
 #endif
         for (size_t i = 0; i < m_points.size(); ++i) {
             if (type == SelectedAndUnselected || (type == Selected && m_selected[i]) || (type == Unselected && !m_selected[i]))
@@ -629,12 +629,12 @@ void Data::matchSelectedColorToUnselectedColors()
     ha.Solve(distMat, assignment);
 
 #ifndef Q_OS_MACOS
-        auto iota = std::ranges::views::iota(0, m_points.size());
-        std::for_each(std::execution::par, iota.begin(), iota.end(), [&](size_t i) {
+    auto iota = std::ranges::views::iota((size_t)0, m_points.size());
+    std::for_each(std::execution::par, iota.begin(), iota.end(), [&](size_t i) {
 #else
-        QList<size_t> iota(m_points.size(), 0);
-        std::iota(iota.begin(), iota.end(), 0);
-        QtConcurrent::blockingMap(iota.begin(), iota.end(), [&](const size_t & i) {
+    QList<size_t> iota(m_points.size(), 0);
+    std::iota(iota.begin(), iota.end(), 0);
+    QtConcurrent::blockingMap(iota.begin(), iota.end(), [&](const size_t & i) {
 #endif
         if (isSelected(i)) {
             auto color = fuzzyColor(i);
@@ -697,12 +697,12 @@ void Data::matchColorsToDesign(SelectionType selection)
     }
 
 #ifndef Q_OS_MACOS
-        auto iota = std::ranges::views::iota(0, m_points.size());
-        std::for_each(std::execution::par, iota.begin(), iota.end(), [&](size_t i) {
+    auto iota = std::ranges::views::iota((size_t)0, m_points.size());
+    std::for_each(std::execution::par, iota.begin(), iota.end(), [&](size_t i) {
 #else
-        QList<size_t> iota(m_points.size(), 0);
-        std::iota(iota.begin(), iota.end(), 0);
-        QtConcurrent::blockingMap(iota.begin(), iota.end(), [&](const size_t & i) {
+    QList<size_t> iota(m_points.size(), 0);
+    std::iota(iota.begin(), iota.end(), 0);
+    QtConcurrent::blockingMap(iota.begin(), iota.end(), [&](const size_t & i) {
 #endif
         if (selection == SelectedAndUnselected || (selection == Selected && isSelected(i)) || (selection == Unselected && !isSelected(i))) {
             auto color = fuzzyColor(i);
