@@ -4,12 +4,17 @@
 #include <algorithm>
 #include <execution>
 #include <cassert>
+#include <QtGlobal>
 
 template <typename RandomIt, typename Compare>
 RandomIt median(const RandomIt & first, const RandomIt & last, const Compare & comp)
 {
     RandomIt n = first + (last - first - 1) / 2;
-    std::nth_element(std::execution::par_unseq, first, n, last, comp);
+    std::nth_element(
+#ifndef Q_OS_MACOS
+        std::execution::par,
+#endif
+        first, n, last, comp);
     return n;
 }
 

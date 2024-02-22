@@ -29,6 +29,10 @@
 #include "core/matrix.h"
 #include "core/kernel.h"
 
+#ifdef Q_OS_MACOS
+#include <QtConcurrent>
+#endif
+
 PaintingWidget::PaintingWidget(Data * data, CommandStack * cmdStack, DropletGraphWidget * graph, QWidget *parent)
     : QWidget{parent},
     m_data(data),
@@ -184,7 +188,11 @@ void PaintingWidget::clear()
 void PaintingWidget::beginPaintOperation()
 {
     m_prevColors = m_data->fuzzyColors();
+#ifdef Q_OS_MACOS
+    QtConcurrent::blockingMap(m_painted, [](bool & b) {b = false;});
+#else
     std::fill(std::execution::par, m_painted.begin(), m_painted.end(), false);
+#endif
 }
 
 void PaintingWidget::boxBlurSliderValueChanged(int value)
@@ -206,10 +214,14 @@ void PaintingWidget::boxBlurSliderReleased()
     m_graph->update();
 }
 
-PaintingWidget::PaintStrokeCommand::PaintStrokeCommand(PaintingWidget * p, const std::vector<bool> & painted, const std::vector<FuzzyColor> & prevColors)
+PaintingWidget::PaintStrokeCommand::PaintStrokeCommand(PaintingWidget * p, const QList<bool> & painted, const std::vector<FuzzyColor> & prevColors)
     : m_paintingWidget(p)
 {
-    size_t numModified = std::count_if(std::execution::par, painted.begin(), painted.end(), [](bool b){return b;});
+    size_t numModified = std::count_if(
+#ifndef Q_OS_MACOS
+        std::execution::par,
+#endif
+        painted.begin(), painted.end(), [](bool b){return b;});
     m_data.reserve(numModified);
     for (size_t i = 0; i < painted.size(); ++i) {
         if (painted[i]) {
@@ -220,9 +232,16 @@ PaintingWidget::PaintStrokeCommand::PaintStrokeCommand(PaintingWidget * p, const
 
 void PaintingWidget::PaintStrokeCommand::redo()
 {
+#ifndef Q_OS_MACOS
     std::for_each(std::execution::par, m_data.begin(), m_data.end(), [&](auto & tuple) {
         m_paintingWidget->data()->setColor(std::get<0>(tuple), std::get<2>(tuple));
     });
+#else
+    QtConcurrent::blockingMap(m_data.begin(), m_data.end(), [&](auto & tuple) {
+        m_paintingWidget->data()->setColor(std::get<0>(tuple), std::get<2>(tuple));
+    });
+#endif
+
     m_paintingWidget->beginPaintOperation();
     if (m_paintingWidget->graph()->convexHullsVisible())
         m_paintingWidget->graph()->updateConvexHulls();
@@ -231,9 +250,16 @@ void PaintingWidget::PaintStrokeCommand::redo()
 
 void PaintingWidget::PaintStrokeCommand::undo()
 {
+#ifndef Q_OS_MACOS
     std::for_each(std::execution::par, m_data.begin(), m_data.end(), [&](auto & tuple) {
+        m_paintingWidget->data()->setColor(std::get<0>(tuple), std::get<2>(tuple));
+    });
+#else
+    QtConcurrent::blockingMap(m_data.begin(), m_data.end(), [&](auto & tuple) {
         m_paintingWidget->data()->setColor(std::get<0>(tuple), std::get<1>(tuple));
     });
+#endif
+
     m_paintingWidget->beginPaintOperation();
     if (m_paintingWidget->graph()->convexHullsVisible())
         m_paintingWidget->graph()->updateConvexHulls();
@@ -267,7 +293,7 @@ bool PaintingWidget::eventFilter(QObject *obj, QEvent *event)
             double w2 = pow(w, 2);
             OrthogonalRectangle rect(value + Point(-w, -h), 2*w, 2*h);
             viewport.translate(-viewport.topLeft());
-            std::vector<size_t> items;
+            QList<size_t> items;
 
             if (m_brushStrength == 100 || flatPainting->isChecked()) { //unfuzzy painting
                 items = m_data->rectangleSearchSelection(rect, [&](size_t i) {
@@ -499,9 +525,14 @@ void BoxBlurWorker::go()
     S /= 2;
     double SS = S * S;
     std::vector<FuzzyColor> blurredPixelData(pixelData.size(), FuzzyColor(m_data->colorComponentCount()));
-    std::vector<size_t> blurIota(blurredPixelData.size());
+    QList<size_t> blurIota(blurredPixelData.size());
     std::iota(blurIota.begin(), blurIota.end(), 0);
+
+#ifdef Q_OS_MACOS
+    QtConcurrent::blockingMap(blurIota.begin(), blurIota.end(), [&](size_t & target) {
+#else
     std::for_each (std::execution::par, blurIota.begin(), blurIota.end(), [&](size_t target) {
+#endif
         auto [x,y] = coordinates(target, (int)xAxis.pixelLength());
         for (int Y = std::max(0, (int)(y - S)); Y < std::min((int)yAxis.pixelLength() - 1, (int)(y + S2)); ++Y) {
             auto inCircleOnY = pow((int)y-Y,2);
@@ -623,7 +654,7 @@ void PaintingWidget::brushStrengthSliderValueChanged(int value)
 
 void PaintingWidget::samplesAdded()
 {
-    m_painted = std::vector<bool>(m_data->pointCount(), false);
+    m_painted = QList<bool>(m_data->pointCount(), false);
     m_prevColors = m_data->fuzzyColors();
 }
 

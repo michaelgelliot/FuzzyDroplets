@@ -5,6 +5,7 @@
 #include <vector>
 #include <random>
 #include "color.h"
+#include <QtGlobal>
 
 class ColorScheme
 {
@@ -55,7 +56,11 @@ public:
         assert(lastIndex >= firstIndex);
         if (lastIndex >= m_colors.size() - 1)
             enlargeColorList(lastIndex);
+#ifndef Q_OS_MACOS
         return std::ranges::views::drop(std::ranges::views::take(m_colors, lastIndex + 1), firstIndex);
+#else
+        return std::vector<Color::Rgba>(m_colors.begin() + firstIndex, m_colors.begin() + lastIndex + 1);
+#endif
     }
 
 private:

@@ -64,7 +64,13 @@ struct CentroidsFromDesign
             std::transform(toSort.begin(), toSort.end(), result.begin(), [&](const auto & elem){return data->design()->clusterCentroid(std::get<0>(elem));});
             result.resize(k);
         } else if (result.size() < k) {
+#ifdef Q_OS_MACOS
+            auto gen = RandomMedoids::generate(data, k - (int)result.size());
+            result.reserve(result.size() + gen.size());
+            for (auto & g : gen) result.push_back(g);
+#else
             result.append_range(RandomMedoids::generate(data, k - (int)result.size()));
+#endif
         }
         return result;
     }
@@ -91,7 +97,13 @@ struct CentroidsFromCurrentColors
         if (result.size() > k) {
             result.resize(k);
         } else if (result.size() < k) {
+#ifdef Q_OS_MACOS
+            auto gen = RandomMedoids::generate(data, k - (int)result.size());
+            result.reserve(result.size() + gen.size());
+            for (auto & g : gen) result.push_back(g);
+#else
             result.append_range(RandomMedoids::generate(data, k - (int)result.size()));
+#endif
         }
 
         return result;

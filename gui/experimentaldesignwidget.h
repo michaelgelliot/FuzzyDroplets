@@ -18,6 +18,7 @@ class QTableWidget;
 class SampleListWidget;
 class PointCloud;
 class PaintingWidget;
+class QToolButton;
 
 namespace Plot
 {

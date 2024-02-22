@@ -7,7 +7,7 @@
 template <typename T, typename Allocator = std::allocator<T>>
 class VectorQueue
 {
-	using Vector = std::vector<T, Allocator>;
+    using Vector = std::vector<T, Allocator>;
 
 public:
 
@@ -26,7 +26,7 @@ public:
 
     constexpr explicit VectorQueue(size_type max_offset = 1000, const Allocator& alloc = Allocator()) noexcept
         : m_vec(alloc),
-          m_max_offset(max_offset)
+        m_max_offset(max_offset)
     {
     }
 
@@ -51,8 +51,8 @@ public:
 
     constexpr VectorQueue(VectorQueue&& other, const Allocator& alloc)
         : m_vec(std::move(other.m_vec), alloc),
-          m_first(other.m_first),
-          m_max_offset(other.m_max_offset)
+        m_first(other.m_first),
+        m_max_offset(other.m_max_offset)
     {
     }
 
@@ -62,12 +62,12 @@ public:
     {
     }
 
-    template <std::ranges::input_range R>
-    constexpr VectorQueue(std::from_range_t, R&& rg, size_type max_offset = 1000, const Allocator& alloc = Allocator())
-        : m_vec(std::forward<R>(rg), alloc),
-        m_max_offset(max_offset)
-    {
-    }
+    // template <std::ranges::input_range R>
+    // constexpr VectorQueue(std::from_range_t, R&& rg, size_type max_offset = 1000, const Allocator& alloc = Allocator())
+    //     : m_vec(std::forward<R>(rg), alloc),
+    //     m_max_offset(max_offset)
+    // {
+    // }
 
     constexpr auto operator<=>(const VectorQueue&) const = default;
 
@@ -119,7 +119,7 @@ public:
         return m_vec.at(pos + m_first);
     }
 
-    constexpr reference operator[](size_type pos) 
+    constexpr reference operator[](size_type pos)
     {
         return m_vec[pos + m_first];
     }
@@ -129,7 +129,7 @@ public:
         return m_vec[pos + m_first];
     }
 
-    constexpr reference front() 
+    constexpr reference front()
     {
         return m_vec[m_first];
     }
@@ -139,7 +139,7 @@ public:
         return m_vec[m_first];
     }
 
-    constexpr reference back() 
+    constexpr reference back()
     {
         return m_vec.back();
     }
@@ -265,7 +265,7 @@ public:
     {
         return m_vec.insert(pos, std::move<T>(value));
     }
-            
+
     constexpr iterator insert(const_iterator pos, size_type count, const T & value)
     {
         return m_vec.insert(pos, count, value);
@@ -276,7 +276,7 @@ public:
     {
         return m_vec.insert(pos, first, last);
     }
-        
+
     constexpr iterator insert(const_iterator pos, std::initializer_list<T> ilist)
     {
         return m_vec.insert(pos, ilist);

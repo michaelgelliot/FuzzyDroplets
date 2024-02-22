@@ -5,6 +5,10 @@
 #include "core/data.h"
 #include "core/mean.h"
 
+#ifdef Q_OS_MACOS
+#include <QtConcurrent>
+#endif
+
 GmmAssignmentWorker::GmmAssignmentWorker(Data * data)
     : m_data(data)
 {
@@ -90,7 +94,12 @@ void GmmAssignmentWorker::nextStep()
     if (!m_cancel) {
         size_t end = std::min(m_iterStart + 1000, (size_t)m_targetIndices.size());
         int count = m_iterStart;
+
+#ifndef Q_OS_MACOS
         std::for_each(std::execution::par, m_targetIndices.begin() + m_iterStart, m_targetIndices.begin() + end, [&](size_t target) {
+#else
+        QtConcurrent::blockingMap(m_targetIndices.begin() + m_iterStart, m_targetIndices.begin() + end, [&](size_t & target) {
+#endif
             FuzzyColor color(m_distributions.size());
             for (int i = 0; i < m_distributions.size(); ++i) {
                 if (m_alpha[i] > 0) {

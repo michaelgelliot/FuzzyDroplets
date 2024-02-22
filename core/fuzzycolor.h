@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <cassert>
-#include <QtDebug>
+#include <numeric>
 #include "color.h"
 #include "approximately.h"
 
@@ -26,7 +26,11 @@ public:
         m_weights = std::move(weights);
     }
 
+#ifndef Q_OS_MACOS
     friend auto operator<=>(const FuzzyColor &, const FuzzyColor &) = default;
+#else
+    bool operator !=(const FuzzyColor & other) const {return other.m_weights != m_weights;}
+#endif
 
     size_t componentCount() const {return m_weights.size();}
 
@@ -50,7 +54,7 @@ public:
 
     bool isValid() const
     {
-        return std::ranges::count_if(m_weights, [](double d){return d < 0 || d > 1;}) == 0 && approximately::equals(std::ranges::fold_left(m_weights, 0, std::plus()), 1.0);
+        return std::ranges::count_if(m_weights, [](double d){return d < 0 || d > 1;}) == 0 && approximately::equals(std::accumulate(m_weights.begin(), m_weights.end(), 0.0, std::plus()), 1.0);
     }
 
     bool isNull() const
@@ -94,7 +98,7 @@ public:
 
     double totalWeight() const
     {
-        return std::ranges::fold_left(m_weights, 0, std::plus());;
+        return std::accumulate(m_weights.begin(), m_weights.end(), 0.0, std::plus());;
     }
 
     bool isFixed() const

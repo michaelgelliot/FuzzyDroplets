@@ -30,59 +30,59 @@ public:
     using const_reverse_iterator = Vector::const_reverse_iterator;
     using value_type = Vector::value_type;
 
-    explicit constexpr SortedVector(const Allocator& alloc = Allocator()) 
+    explicit constexpr SortedVector(const Allocator& alloc = Allocator())
         : SortedVector(Compare(), alloc)
     {
     }
 
     explicit constexpr SortedVector(Compare compare, const Allocator& alloc = Allocator()) noexcept
         : m_vec(alloc),
-          m_compare(compare)
+        m_compare(compare)
     {
     }
 
     constexpr SortedVector(size_type count, const T& value, Compare compare = Compare(), const Allocator& alloc = Allocator())
         : m_vec(count, value, alloc),
-          m_compare(compare)
+        m_compare(compare)
     {
     }
 
     constexpr explicit SortedVector(size_type count, Compare compare = Compare(), const Allocator& alloc = Allocator())
         : m_vec(count, alloc),
-          m_compare(compare)
+        m_compare(compare)
     {
     }
 
     template< typename InputIt>
     constexpr SortedVector(InputIt first, InputIt last, Compare compare = Compare(), const Allocator& alloc = Allocator())
         : m_vec(last - first, alloc),
-          m_compare(compare)
+        m_compare(compare)
     {
         std::partial_sort_copy(first, last, m_vec.begin(), m_vec.end(), m_compare);
     }
 
     constexpr SortedVector(SortedVector&& other, const Allocator& alloc)
         : m_vec(std::move(other.m_vec), alloc),
-          m_compare(std::move(other.m_compare))
+        m_compare(std::move(other.m_compare))
     {
     }
 
     constexpr SortedVector(std::initializer_list<T> init, Compare compare = Compare(), const Allocator& alloc = Allocator())
         : m_vec(init.size(), alloc),
-          m_compare(compare)
+        m_compare(compare)
     {
         std::ranges::partial_sort_copy(init, m_vec, m_compare);
     }
 
-    template <std::ranges::input_range R>
-    constexpr SortedVector(std::from_range_t, R&& rg, Compare compare = Compare(), const Allocator& alloc = Allocator())
-        : m_vec(std::ranges::distance(std::forward<R>(rg)), alloc),
-          m_compare(compare)
-    {
-        std::ranges::partial_sort_copy(std::forward<R>(rg), m_vec, m_compare);
-    }
+    // template <std::ranges::input_range R>
+    // constexpr SortedVector(std::from_range_t, R&& rg, Compare compare = Compare(), const Allocator& alloc = Allocator())
+    //     : m_vec(std::ranges::distance(std::forward<R>(rg)), alloc),
+    //       m_compare(compare)
+    // {
+    //     std::ranges::partial_sort_copy(std::forward<R>(rg), m_vec, m_compare);
+    // }
 
-    constexpr auto operator<=>(const SortedVector&) const = default;    
+    constexpr auto operator<=>(const SortedVector&) const = default;
 
     constexpr SortedVector& operator=(std::initializer_list<T> ilist)
     {
@@ -323,7 +323,7 @@ public:
 
 private:
 
-	Vector m_vec;
+    Vector m_vec;
     Compare m_compare;
 };
 

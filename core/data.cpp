@@ -6,13 +6,22 @@
 #include "line_feeder.hpp"
 #include "quadtree.h"
 #include "hungarianalgorithm.h"
+#include <QtGlobal>
+#include <sstream>
+#include <cstdlib>
 
 #include <charconv>
+
+#ifdef Q_OS_MACOS
+#include <QtConcurrent>
+#endif
 
 #ifdef FUZZY_QT
 
 #include <QGuiApplication>
 #include <QStyleHints>
+
+
 
 Data::Data(QObject * parent)
     : QObject(parent),
@@ -90,8 +99,14 @@ void Data::updateRgbaInSelection()
 {
     auto baseColors = m_colorScheme->colors(0, m_colorComponentCount - 1);
     for (auto i : m_selectionIndices) {
+#ifndef Q_OS_MACOS
         auto iota = std::ranges::views::iota(m_samples[i][0], m_samples[i][1]);
         std::for_each(std::execution::par, iota.begin(), iota.end(), [&](size_t j) {
+#else
+        QList<size_t> iota(m_samples[i][1] - m_samples[i][0], 0);
+        std::iota(iota.begin(), iota.end(), m_samples[i][0]);
+        QtConcurrent::blockingMap(iota.begin(), iota.end(), [&](const size_t & j) {
+#endif
             m_rgba[j] = m_colors[j].rgba(baseColors);
         });
     }
@@ -101,8 +116,15 @@ void Data::updateRgba()
 {
     if (m_points.size() > 0) {
         const auto baseColors = m_colorScheme->colors(0, m_colorComponentCount - 1);
-        auto iota = std::ranges::views::iota((size_t)0, m_points.size());
+
+#ifndef Q_OS_MACOS
+        auto iota = std::ranges::views::iota(0, m_points.size());
         std::for_each(std::execution::par, iota.begin(), iota.end(), [&](size_t j) {
+#else
+        QList<size_t> iota(m_points.size(), 0);
+        std::iota(iota.begin(), iota.end(), 0);
+        QtConcurrent::blockingMap(iota.begin(), iota.end(), [&](const size_t & j) {
+#endif
             m_rgba[j] = m_colors[j].rgba(baseColors);
         });
     }
@@ -158,8 +180,14 @@ void Data::setColorComponentCount(size_t count)
         }
         m_colorComponentCount = count;
         auto baseColors = m_colorScheme->colors(0, m_colorComponentCount - 1);
-        auto iota = std::ranges::views::iota((size_t)0, m_colors.size());
+#ifndef Q_OS_MACOS
+        auto iota = std::ranges::views::iota(0, m_colors.size());
         std::for_each(std::execution::par, iota.begin(), iota.end(), [&](size_t i) {
+#else
+        QList<size_t> iota(m_colors.size(), 0);
+        std::iota(iota.begin(), iota.end(), 0);
+        QtConcurrent::blockingMap(iota.begin(), iota.end(), [&](const size_t & i) {
+#endif
             m_colors[i].setComponentCount(count);
             m_rgba[i] = m_colors[i].rgba(baseColors);
         });
@@ -187,7 +215,14 @@ void Data::setSelectedSamples(const std::vector<size_t> & indices)
 {
     m_selectionIndices = indices;
     std::fill(m_selected.begin(), m_selected.end(), false);
-    std::for_each(std::execution::par, indices.begin(), indices.end(), [&](size_t i) {
+
+#ifndef Q_OS_MACOS
+        std::for_each(std::execution::par, indices.begin(), indices.end(), [&](size_t i) {
+#else
+        QList<size_t> iota(m_colors.size(), 0);
+        std::iota(iota.begin(), iota.end(), 0);
+        QtConcurrent::blockingMap(indices.begin(), indices.end(), [&](const size_t & i) {
+#endif
         std::fill(m_selected.begin() + m_samples[i][0], m_selected.begin() + m_samples[i][1], true);
     });
 #ifdef FUZZY_QT
@@ -224,8 +259,15 @@ std::vector<Point> Data::randomSelectedPoints(size_t i) const
 std::vector<Point> Data::centroidsByFuzzyColor(SelectionType type, std::vector<double> * count) const
 {
     std::vector<WeightedArithmeticMean<Point>> means(m_colorComponentCount);
-    auto iota = std::ranges::views::iota((size_t)0, m_colorComponentCount);
-    std::for_each(std::execution::par, iota.begin(), iota.end(), [&](size_t k) {
+
+#ifndef Q_OS_MACOS
+        auto iota = std::ranges::views::iota(0, m_colorComponentCount);
+        std::for_each(std::execution::par, iota.begin(), iota.end(), [&](size_t k) {
+#else
+        QList<size_t> iota(m_colorComponentCount, 0);
+        std::iota(iota.begin(), iota.end(), 0);
+        QtConcurrent::blockingMap(iota.begin(), iota.end(), [&](const size_t & k) {
+#endif
         for (size_t i = 0; i < m_points.size(); ++i) {
             if (type == SelectedAndUnselected || (type == Selected && m_selected[i]) || (type == Unselected && !m_selected[i]))
                 means[k].add(m_points[i], m_colors[i].weight(k));
@@ -260,8 +302,7 @@ void Data::deterministicDefuzzifySelection() //todo parallelize
 {
     for (auto i : m_selectionIndices) {
         for (size_t j = m_samples[i][0]; j < m_samples[i][1]; ++j) {
-            if (fuzzyColor(j) != 0)
-                setColor(j, fuzzyColor(j).dominantComponent());
+            setColor(j, fuzzyColor(j).dominantComponent());
         }
     }
 }
@@ -273,16 +314,13 @@ void Data::randomlyDefuzzifySelection() // todo parallelize
     std::uniform_real_distribution<double> dist(0, 1);
     for (auto i : m_selectionIndices) {
         for (size_t j = m_samples[i][0]; j < m_samples[i][1]; ++j) {
-            if (fuzzyColor(j) != 0) {
-                auto r = dist(rng);
-                double total = 0;
-                for (size_t k = 0; k < m_colorComponentCount; ++k) {
-                    total += fuzzyColor(j).weight(k);
-                    if (total >= r) {
-                        setColor(j, k);
-                        if (k == 0) qDebug("here");
-                        break;
-                    }
+            auto r = dist(rng);
+            double total = 0;
+            for (size_t k = 0; k < m_colorComponentCount; ++k) {
+                total += fuzzyColor(j).weight(k);
+                if (total >= r) {
+                    setColor(j, k);
+                    break;
                 }
             }
         }
@@ -313,7 +351,6 @@ void Data::addSamples(const std::vector<std::string> & paths, std::string & erro
         size_t lineCount = 0;
         while (!feeder.atEnd()) {
             double x, y;
-
             auto line = feeder.getLine();
             size_t pos1 = line.find(',');
             if (pos1 == std::string_view::npos) {
@@ -327,6 +364,7 @@ void Data::addSamples(const std::vector<std::string> & paths, std::string & erro
                 pos2 = line.size();
             }
 
+#ifndef Q_OS_MACOS
             auto err1 = std::from_chars(line.data(), line.data() + pos1, y);
             auto err2 = std::from_chars(line.data() + pos1 + 1, line.data() + pos2, x);
 
@@ -340,7 +378,24 @@ void Data::addSamples(const std::vector<std::string> & paths, std::string & erro
                     error += "(failed to convert the first two columns to numeric values in line " + ss.str() + ")\n\n";
                 }
             }
-
+#else
+            char * err1;
+            char * err2;
+            std::string Y(line.data(), line.data() + pos1);
+            std::string X(line.data() + pos1 + 1, line.data() + pos2);
+            y = std::strtod(Y.data(), &err1);
+            x = std::strtod(X.data(), &err2);
+            if (err1 == Y.data() || err2 == X.data() || x == HUGE_VAL || y == HUGE_VAL ) {
+                if (lineCount == 0)
+                    continue;
+                else {
+                    error += "Skipped file: " + path + "\n";
+                    std::stringstream ss;
+                    ss << lineCount;
+                    error += "(failed to convert the first two columns to numeric values in line " + ss.str() + ")\n\n";
+                }
+            }
+#endif
             if (pos2 < line.size()) {
                 auto commaCount = std::count(line.begin() + pos2 + 1, line.end(), ',');
                 if (commaCount > 1) {
@@ -411,22 +466,37 @@ void Data::addSamples(const std::vector<std::string> & paths, std::string & erro
                 pos2 = line.size();
             }
 
+#ifndef Q_OS_MACOS
             auto err1 = std::from_chars(line.data(), line.data() + pos1, y);
             auto err2 = std::from_chars(line.data() + pos1 + 1, line.data() + pos2, x);
-
             if (err1.ec != std::errc() || err2.ec != std::errc()) {
                 if (lineCount == 0)
                     continue;
                 else {
-                    m_samples.pop_back();
-                    m_points.resize(oldPointCount);
                     error += "Skipped file: " + path + "\n";
                     std::stringstream ss;
                     ss << lineCount;
                     error += "(failed to convert the first two columns to numeric values in line " + ss.str() + ")\n\n";
-                    break;
                 }
             }
+#else
+            char * err1;
+            char * err2;
+            std::string Y(line.data(), line.data() + pos1);
+            std::string X(line.data() + pos1 + 1, line.data() + pos2);
+            y = std::strtod(Y.data(), &err1);
+            x = std::strtod(X.data(), &err2);
+            if (err1 == Y.data() || err2 == X.data() || x == HUGE_VAL || y == HUGE_VAL ) {
+                if (lineCount == 0)
+                    continue;
+                else {
+                    error += "Skipped file: " + path + "\n";
+                    std::stringstream ss;
+                    ss << lineCount;
+                    error += "(failed to convert the first two columns to numeric values in line " + ss.str() + ")\n\n";
+                }
+            }
+#endif
 
             m_points.push_back({x,y});
 
@@ -443,6 +513,7 @@ void Data::addSamples(const std::vector<std::string> & paths, std::string & erro
                         if (pos2 == std::string_view::npos)
                             pos2 = col.size();
                         double d;
+#ifndef Q_OS_MACOS
                         auto err = std::from_chars(col.data() + offset, col.data() + pos2, d);
                         if (err.ec != std::errc()) {
                             m_colors.back().setWeight(i, 0);
@@ -450,11 +521,23 @@ void Data::addSamples(const std::vector<std::string> & paths, std::string & erro
                         } else {
                             m_colors.back().setWeight(i, d);
                         }
+# else
+                        std::string D(col.data() + offset, col.data() + pos2);
+                        d = std::strtod(Y.data(), &err1);
+                        if (err1 == D.data() || d == HUGE_VAL ) {
+                            m_colors.back().setWeight(i, 0);
+                            colorErrorInFile = true;
+                        } else {
+                            m_colors.back().setWeight(i, d);
+                        }
+#endif
                         offset = pos2 + 1;
                     }
                     m_colors.back().setWeight(0, 1.0 - (m_colors.back().totalWeight() - m_colors.back().weight(0)));
                 } else {
                     int fix;
+
+#ifndef Q_OS_MACOS
                     auto err = std::from_chars(col.data(), col.data() + pos2, fix);
                     if (err.ec != std::errc()) {
                         m_colors.back().setFixedComponent(0);
@@ -462,6 +545,17 @@ void Data::addSamples(const std::vector<std::string> & paths, std::string & erro
                     } else {
                         m_colors.back().setFixedComponent(fix);
                     }
+#else
+                    char * err;
+                    std::string C(col.data(), col.data() + pos2);
+                    auto lfix = std::strtol(C.data(), &err, 10);
+                    if (err == C.data() || lfix == HUGE_VALL) {
+                        m_colors.back().setFixedComponent(0);
+                        colorErrorInFile = true;
+                    } else {
+                        m_colors.back().setFixedComponent(lfix);
+                    }
+#endif
                 }
             }
 
@@ -534,8 +628,14 @@ void Data::matchSelectedColorToUnselectedColors()
     HungarianAlgorithm ha;
     ha.Solve(distMat, assignment);
 
-    auto iota = std::ranges::views::iota((size_t)0, m_points.size());
-    std::for_each(std::execution::par, iota.begin(), iota.end(), [&](size_t i) {
+#ifndef Q_OS_MACOS
+        auto iota = std::ranges::views::iota(0, m_points.size());
+        std::for_each(std::execution::par, iota.begin(), iota.end(), [&](size_t i) {
+#else
+        QList<size_t> iota(m_points.size(), 0);
+        std::iota(iota.begin(), iota.end(), 0);
+        QtConcurrent::blockingMap(iota.begin(), iota.end(), [&](const size_t & i) {
+#endif
         if (isSelected(i)) {
             auto color = fuzzyColor(i);
             FuzzyColor newColor(m_colorComponentCount);
@@ -596,8 +696,14 @@ void Data::matchColorsToDesign(SelectionType selection)
         }
     }
 
-    auto iota = std::ranges::views::iota((size_t)0, m_points.size());
-    std::for_each(std::execution::par, iota.begin(), iota.end(), [&](size_t i) {
+#ifndef Q_OS_MACOS
+        auto iota = std::ranges::views::iota(0, m_points.size());
+        std::for_each(std::execution::par, iota.begin(), iota.end(), [&](size_t i) {
+#else
+        QList<size_t> iota(m_points.size(), 0);
+        std::iota(iota.begin(), iota.end(), 0);
+        QtConcurrent::blockingMap(iota.begin(), iota.end(), [&](const size_t & i) {
+#endif
         if (selection == SelectedAndUnselected || (selection == Selected && isSelected(i)) || (selection == Unselected && !isSelected(i))) {
             auto color = fuzzyColor(i);
             FuzzyColor newColor(m_colorComponentCount);
@@ -613,10 +719,10 @@ void Data::matchColorsToDesign(SelectionType selection)
 #endif
 }
 
-std::vector<size_t> Data::rectangleSearchSelection(OrthogonalRectangle rect, const std::function<bool(size_t)> & filter) const
+QList<size_t> Data::rectangleSearchSelection(OrthogonalRectangle rect, const std::function<bool(size_t)> & filter) const
 {
     if (m_selectionIndices.empty()) {
-        return std::vector<size_t>();
+        return QList<size_t>();
     } else {
         return m_quadTree->rectangleSearch(m_points, rect, [&](size_t i) {return isSelected(i) && filter(i);});
     }

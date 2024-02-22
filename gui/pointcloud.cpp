@@ -8,7 +8,11 @@
 #include "core/data.h"
 #include "core/quadtree.h"
 #include "qpainterpath.h"
-#include <QtDebug>
+#include <QtGlobal>
+
+#ifdef Q_OS_MACOS
+#include <QtConcurrent>
+#endif
 
 PointCloud::PointCloud(Data * data, Plot::ContinuousAxis * xAxis, Plot::ContinuousAxis * yAxis)
     : Primitive(), m_xAxis(xAxis), m_yAxis(yAxis), m_data(data)
@@ -28,10 +32,15 @@ void PointCloud::render(QPainter & painter)
     auto f = painter.clipBoundingRect().adjusted(-S, -S, S, S);
 
     OrthogonalRectangle rect(Point(m_xAxis->value(f.left()), m_yAxis->value(f.bottom())), Point(m_xAxis->value(f.right()), m_yAxis->value(f.top())));
-    std::vector<size_t> items = m_data->quadTree()->rectangleSearch(m_data->points(), rect, [&](size_t i){return m_data->isSelected(i);});
+    QList<size_t> items = m_data->quadTree()->rectangleSearch(m_data->points(), rect, [&](size_t i){return m_data->isSelected(i);});
 
     m_pixelData.resize(viewWidth * viewHeight);
-    std::fill(std::execution::par_unseq, m_pixelData.begin(), m_pixelData.end(), Color::named::transparent);
+
+#ifndef Q_OS_MACOS
+    std::fill(std::execution::par,m_pixelData.begin(), m_pixelData.end(), Color::named::transparent);
+#else
+    QtConcurrent::blockingMap(m_pixelData.begin(), m_pixelData.end(), [](QRgb & color) {color = Color::named::transparent;});
+#endif
 
     const double limit = 1.0/m_data->colorComponentCount();
 
@@ -41,7 +50,7 @@ void PointCloud::render(QPainter & painter)
         double dS2 = 1.3 * (dS/2);
 
         for (auto col : m_data->colorZOrder()) {
-            std::for_each(std::execution::seq, items.begin(), items.end(), [&](const auto & p) {
+            std::for_each(items.begin(), items.end(), [&](const auto & p) { // can't be parallel
                 if (m_data->fuzzyColor(p).dominantComponent() == col) { // it's not clear if this will be slower than just asking if the weight of col > 1.0/m_data->colorComponentCount() [which risks repainting each droplet multiple times when there is a lot of fuzziness in the graph; alternative, keep track of which have been painted and and only paint once per droplet?]
                     auto pt = m_data->point(p);
                     if (m_roundSVGMarkers) {
@@ -57,7 +66,11 @@ void PointCloud::render(QPainter & painter)
     } else {
 
         for (auto col : m_data->colorZOrder()) {
-            std::for_each(std::execution::par_unseq, items.begin(), items.end(), [&](const auto & p) {
+#ifndef Q_OS_MACOS
+            std::for_each(std::execution::par, items.begin(), items.end(), [&](const auto & p) {
+#else
+            QtConcurrent::blockingMap(items.begin(), items.end(), [&](auto & p) {
+#endif
                 //if (m_data->fuzzyColor(p).dominantComponent() == col) {
                 if (m_data->fuzzyColor(p).weight(col) > limit) {
                     auto pt = m_data->point(p);

@@ -3,6 +3,7 @@
 
 #include <cassert>
 #include <string>
+#include <array>
 #include "geometry.h"
 
 // Maintains the experimental design of a digital pcr experiment

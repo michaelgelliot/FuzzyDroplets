@@ -26,7 +26,7 @@ public:
     {
     public:
 
-        PaintStrokeCommand(PaintingWidget * p, const std::vector<bool> & painted, const std::vector<FuzzyColor> & prevColors);
+        PaintStrokeCommand(PaintingWidget * p, const QList<bool> & painted, const std::vector<FuzzyColor> & prevColors);
 
         void redo() override;
         void undo() override;
@@ -34,7 +34,7 @@ public:
     private:
 
         PaintingWidget * m_paintingWidget;
-        std::vector<std::tuple<size_t, FuzzyColor, FuzzyColor>> m_data;
+        QList<std::tuple<size_t, FuzzyColor, FuzzyColor>> m_data;
     };
 
     explicit PaintingWidget(Data * data, CommandStack * cmdStack, DropletGraphWidget * graph, QWidget *parent = nullptr);
@@ -102,7 +102,7 @@ private:
     QCheckBox * flatPainting;
 
     QPoint m_prevMousePos;
-    std::vector<bool> m_painted;
+    QList<bool> m_painted;
     std::vector<FuzzyColor> m_prevColors;
 
     QThread * boxBlurWorkerThread {nullptr};

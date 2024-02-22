@@ -11,6 +11,7 @@
 #include <stdexcept>
 #include <cstdio>
 #include <string_view>
+#include <string>
 #include <cstdint>
 
 #ifdef _MSC_VER
@@ -79,7 +80,7 @@ public:
             return;
 #else
     // open file
-        m_file = ::open(filename.c_str(), O_RDONLY | O_LARGEFILE);
+        m_file = ::open(filename.c_str(), O_RDONLY /*| O_LARGEFILE*/); // Q_OS_MACOS
         if (m_file == -1)
         {
             m_file = 0;
@@ -129,7 +130,7 @@ public:
 #ifdef _MSC_VER
             ::UnmapViewOfFile(m_mappedView);
 #else
-            ::munmap(_mappedView, _filesize);
+            ::munmap(m_mappedView, m_filesize);
 #endif
             m_mappedView = NULL;
         }
@@ -232,7 +233,7 @@ public:
 
         // Linux
         // new mapping
-        m_mappedView = ::mmap64(NULL, mappedBytes, PROT_READ, MAP_SHARED, m_file, offset);
+        m_mappedView = ::/*mmap64*/mmap(NULL, mappedBytes, PROT_READ, MAP_SHARED, m_file, offset); //Q_OS_MACOS
         if (m_mappedView == MAP_FAILED)
         {
             m_mappedBytes = 0;

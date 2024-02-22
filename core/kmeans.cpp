@@ -3,6 +3,12 @@
 #include "data.h"
 #include <random>
 #include <execution>
+#include <QtGlobal>
+
+#ifdef Q_OS_MACOS
+#include <QtConcurrent>
+#endif
+
 
 KMeans::KMeans(Data * d, double fuzzy, int numClusters, int numReplicates, int maxIters, CentroidInitialization method, int sampleSize, const std::vector<Point> & customInitCentroids)
     : EMClustering(d, numClusters, numReplicates, maxIters, sampleSize, method, customInitCentroids),
@@ -14,7 +20,11 @@ KMeans::KMeans(Data * d, double fuzzy, int numClusters, int numReplicates, int m
 void KMeans::expectation()
 {
     if (m_fuzzy > 1) {
+#ifndef Q_OS_MACOS
         std::for_each(std::execution::par, pointIota().begin(), pointIota().end(), [&](size_t i){
+#else
+        QtConcurrent::blockingMap(pointIota().begin(), pointIota().end(), [&](const size_t & i){
+#endif
             FuzzyColor color(data()->colorComponentCount());
             for (size_t j = 0; j < numClusters(); ++j) {
                 double denom = 0;
@@ -26,7 +36,11 @@ void KMeans::expectation()
         });
     } else {
 //        data()->quadTree()->setKMeansLabels(data()->points(), distributions(), [&](size_t i, size_t color){data()->storeColor(i, color + 1);}, [&](size_t i){return data()->isSelected(i);});
-        std::for_each(std::execution::par, pointIota().begin(), pointIota().end(), [&](size_t i) {
+        std::for_each(
+#ifndef Q_OS_MACOS
+    std::execution::par,
+#endif
+    pointIota().begin(), pointIota().end(), [&](size_t i) {
             long double bestScore = std::numeric_limits<long double>::max();
             int bestK = 0;
             for (int k = 0; k < numClusters(); ++k) {
@@ -65,7 +79,11 @@ long double KMeans::maximization()
                 double test = (data()->fuzzyColor(index).dominantComponent() == i+1) ? distribution(i).squaredDistanceTo(data()->point(index)) : 0;
                 return test;
             });
-            dist += std::reduce(std::execution::par, trans.begin(), trans.end(), (long double)0);
+            dist += std::reduce(
+#ifndef Q_OS_MACOS
+                std::execution::par,
+#endif
+                trans.begin(), trans.end(), (long double)0);
         }
         return dist;
     }

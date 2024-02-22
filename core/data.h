@@ -102,7 +102,7 @@ public:
     const std::vector<std::string> & samplePaths() const {return m_samplePaths;}
 
     std::pair<size_t, double> nearestNeighbourInSelection(Point target, double xScale = 1, double yScale = 1, const std::function<bool(size_t)> & filter = [](size_t t){return true;});
-    std::vector<size_t> rectangleSearchSelection(OrthogonalRectangle rect, const std::function<bool(size_t)> & filter = [](size_t t){return true;}) const;
+    QList<size_t> rectangleSearchSelection(OrthogonalRectangle rect, const std::function<bool(size_t)> & filter = [](size_t t){return true;}) const;
 
 #ifdef FUZZY_QT
 

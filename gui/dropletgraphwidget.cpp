@@ -11,6 +11,10 @@
 #include <QSettings>
 #include <execution>
 
+#ifdef Q_OS_MACOS
+#include <QtConcurrent>
+#endif
+
 DropletGraphWidget::DropletGraphWidget(Data * data, CommandStack * cmdStack, QWidget * parent)
     : ScatterPlotBox2(parent),
      m_data(data),
@@ -243,9 +247,13 @@ void DropletGraphWidget::updateConvexHulls()
     if (m_paintConvexHulls) {
         if (m_data->selectedPointCount() > 0) {
             double limit = 1.0 / m_data->colorComponentCount();
-            std::vector<int> io(m_convexHulls.size());
+            QList<int> io(m_convexHulls.size());
             std::iota(io.begin(), io.end(), 1);
+#ifndef Q_OS_MACOS
             std::for_each(std::execution::par, io.begin(), io.end(), [&](int i) {
+#else
+            QtConcurrent::blockingMap(io.begin(), io.end(), [&](int i) {
+#endif
                 std::vector<Point> cols;
                 for (auto j = 0; j < m_data->points().size(); ++j)
                     if (m_data->isSelected(j) && m_data->fuzzyColor(j).weight(i) >= limit)

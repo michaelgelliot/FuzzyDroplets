@@ -2,6 +2,10 @@
 #include "fuzzycolor.h"
 #include <execution>
 
+#ifdef Q_OS_MACOS
+#include <QtConcurrent>
+#endif
+
 Gmm::Gmm(Data * d, bool clusterOutliers, bool fixedMeans, bool sharedScale, bool sharedRho, DefuzzificationPolicy policy, int numClusters, int numReplicates, int maxIters, CentroidInitialization method, int sampleSize, const std::vector<Point> & customInitCentroids)
     : EMClustering(d, numClusters, numReplicates, maxIters, sampleSize, method, customInitCentroids),
     m_policy(policy),
@@ -21,7 +25,11 @@ Gmm::Gmm(Data * d, bool clusterOutliers, bool fixedMeans, bool sharedScale, bool
 
 void Gmm::expectation()
 {
-    std::for_each(std::execution::par, pointIota().begin(), pointIota().end(), [&](size_t i) {
+#ifndef Q_OS_MACOS
+    std::for_each(std::execution::par, pointIota().begin(), pointIota().end(), [&](size_t i){
+#else
+    QtConcurrent::blockingMap(pointIota().begin(), pointIota().end(), [&](const size_t & i){
+#endif
         FuzzyColor color((int)data()->colorComponentCount());
         double denom = 0;
         for (int k = 1; k <= numClusters(); ++k) {

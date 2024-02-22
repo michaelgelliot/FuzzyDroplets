@@ -9,6 +9,8 @@
 #include "median.h"
 #include "vectorqueue.h"
 #include "sortedvector.h"
+#include <QtDebug>
+#include <QList>
 
 template <typename T>
 class QuadTree
@@ -128,10 +130,10 @@ public:
     }
 
     template <typename Data>
-    std::vector<size_t> rectangleSearch(const Data & container, OrthogonalRectangle rect, const std::function<bool(size_t)> & filter = [](size_t t){return true;}, size_t reserve = 100) const
+    QList<size_t> rectangleSearch(const Data & container, OrthogonalRectangle rect, const std::function<bool(size_t)> & filter = [](size_t t){return true;}, size_t reserve = 100) const
     {
 
-        std::vector<size_t> results;
+        QList<size_t> results;
         if (container.size() == 0 || m_nodes.size() == 0) return results;
 
         results.reserve(reserve);

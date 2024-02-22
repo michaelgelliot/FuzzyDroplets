@@ -5,6 +5,10 @@
 #include <QThread>
 #include "core/data.h"
 
+#ifdef Q_OS_MACOS
+#include <QtConcurrent>
+#endif
+
 NearestNeighboursWorker::NearestNeighboursWorker(Data * data)
     : m_data(data)
 {
@@ -32,7 +36,12 @@ void NearestNeighboursWorker::nextStep()
     if (!m_cancel) {
         size_t end = std::min(m_iterStart + 1000, (size_t)m_targetIndices.size());
         int count = m_iterStart;
+
+#ifndef Q_OS_MACOS
         std::for_each(std::execution::par, m_targetIndices.begin() + m_iterStart, m_targetIndices.begin() + end, [&](size_t target) {
+#else
+        QtConcurrent::blockingMap(m_targetIndices.begin() + m_iterStart, m_targetIndices.begin() + end, [&](size_t & target) {
+#endif
             auto points = m_tree->kNearestNeighbors(m_sourceIndices, m_k, m_data->point(target).x(), m_data->point(target).y());
             FuzzyColor color(m_data->colorComponentCount());
             for (auto point : points) {

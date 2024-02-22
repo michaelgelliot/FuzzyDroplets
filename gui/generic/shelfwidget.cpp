@@ -67,14 +67,14 @@ CollapsibleContainerTitle::CollapsibleContainerTitle(const QString & title, QWid
 
 void CollapsibleContainerTitle::showExpanded()
 {
-    setText(QChar(11206) + QString(" ") + m_title);
+    setText(QChar(0x25BC) + QString(" ") + m_title);
     m_collapsed = false;
     emit setCollapsed(false);
 }
 
 void CollapsibleContainerTitle::showCollapsed()
 {
-    setText(QChar(11208) + QString(" ") + m_title);
+    setText(QChar(0x25B6) + QString(" ") + m_title);
     m_collapsed = true;
     emit setCollapsed(true);
 }

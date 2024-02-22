@@ -5,6 +5,7 @@
 #include "centroids.h"
 #include "geometry.h"
 #include <vector>
+#include <QList>
 
 template <typename DistributionData>
 class EMClustering
@@ -32,7 +33,7 @@ public:
         if (method == CentroidInitialization::KMeansPP || method == CentroidInitialization::FarthestPoint)
             m_initSample = data->randomSelectedPoints(std::max(sampleSize, numClusters));
 
-        m_pointIota = std::vector<int>();
+        m_pointIota = QList<size_t>();
         m_pointIota.reserve(data->selectedPointCount());
         for (int i = 0; i < data->pointCount(); ++i)
             if (data->isSelected(i)) m_pointIota.push_back(i);
@@ -57,7 +58,7 @@ public:
     int numReplicates() const {return m_numReplicates;}
     int maxIters() const {return m_maxIters;}
 
-    const std::vector<int> & pointIota() const {return m_pointIota;}
+    const QList<size_t> & pointIota() const {return m_pointIota;}
 
     long double performReplicate()
     {
@@ -115,7 +116,7 @@ private:
     int m_numClusters;
     int m_numReplicates;
     int m_maxIters;
-    std::vector<int> m_pointIota;
+    QList<size_t> m_pointIota;
     std::vector<Point> m_initSample;
     CentroidInitialization m_method;
     std::vector<Point> m_customInitCentroids;
