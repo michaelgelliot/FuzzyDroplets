@@ -87,7 +87,9 @@ PaintingWidget::PaintingWidget(Data * data, CommandStack * cmdStack, DropletGrap
     connect(brushStrengthSlider, &QSlider::valueChanged, this, &PaintingWidget::brushStrengthSliderValueChanged);
 
     QGroupBox * boxBlurBox = new QGroupBox("Circular Box Blur", this);
+#ifndef Q_OS_MACOS
     boxBlurBox->setFlat(true);
+#endif
     QVBoxLayout * boxBlurLayout = new QVBoxLayout;
     m_boxBlurSlider = new QSlider(Qt::Horizontal);
     m_boxBlurSlider->setRange(20, 2000);
@@ -106,7 +108,9 @@ PaintingWidget::PaintingWidget(Data * data, CommandStack * cmdStack, DropletGrap
     connect(m_paletteButtonGroup, &QButtonGroup::idClicked, this, &PaintingWidget::paletteButtonClicked);
 
     QGroupBox * defuzzifyBox = new QGroupBox("Defuzzify", this);
-    defuzzifyBox->setFlat(true);
+#ifndef Q_OS_MACOS
+    boxBlurBox->setFlat(true);
+#endif
     QHBoxLayout * defuzzifyBoxLayout = new QHBoxLayout;
     QPushButton * rbutton = new QPushButton("Probabilistic");
     QPushButton * dbutton = new QPushButton("Deterministic");

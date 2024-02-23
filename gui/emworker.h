@@ -55,7 +55,7 @@ class EMWorker : public QObject
 public:
 
     EMWorker(EMClusteringContainerBase * container);
-    ~EMWorker() {delete m_clustering;}
+    ~EMWorker() {/*delete m_clustering;*/} // deleted by EMClusterngContainer?
 
 public slots:
 

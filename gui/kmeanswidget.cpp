@@ -14,7 +14,9 @@ KMeansWidget::KMeansWidget(Data * data, DropletGraphWidget * graph, QWidget * pa
     fuzzyBox->setChecked(false);
     auto m_fuzzyBoxLayout = new QFormLayout;
     fuzzyBox->setLayout(m_fuzzyBoxLayout);
+#ifndef Q_OS_MACOS
     fuzzyBox->setFlat(true);
+#endif
     connect(fuzzyBox, &QGroupBox::toggled, this, &KMeansWidget::useFuzzyClustering);
 
     m_fuzzinessSpinBox = new QDoubleSpinBox(this);

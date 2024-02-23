@@ -32,8 +32,9 @@ void RandomForestWorker::go()
         }
     }
 
-    std::string rangerPath = "C:/Users/micha/Desktop";
-
+    std::string rangerPath = QDir::tempPath().toStdString();
+    if (rangerPath.ends_with('/'))
+        rangerPath.resize(rangerPath.size() - 1);
 
     // step one, generate a forest from the data
 

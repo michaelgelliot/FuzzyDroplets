@@ -91,10 +91,10 @@ void DBScanWorker::go()
 {
     emit updateProgress(0);
     m_percent = 0;
-    m_completedPointCount = 0;
-    m_curPos = 0;
-    m_assignment = std::vector<size_t>(m_data->pointCount(), Undefined);
-    m_selectedPointCount = m_data->selectedPointCount();
+     m_completedPointCount = 0;
+     m_curPos = 0;
+     m_assignment = std::vector<size_t>(m_data->pointCount(), std::numeric_limits<size_t>::max()); // for some reason if i use DBScanWorker::Undefined here, it doesn't compile under mac debug
+     m_selectedPointCount = m_data->selectedPointCount();
     emit keepGoing();
 }
 
