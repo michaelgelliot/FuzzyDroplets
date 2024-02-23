@@ -15,9 +15,6 @@ GMMWidget::GMMWidget(Data * data, DropletGraphWidget * graph, QWidget * parent)
     auto form = (QFormLayout*)layout();
 
     QGroupBox * constraintsBox= new QGroupBox("Constraints");
-#ifndef Q_OS_MACOS
-    constraintsBox->setFlat(true);
-#endif
     constraintsLayout = new QFormLayout;
 
     m_clusterOutliersCheckbox = new QCheckBox(this);
@@ -36,9 +33,6 @@ GMMWidget::GMMWidget(Data * data, DropletGraphWidget * graph, QWidget * parent)
     form->addRow(constraintsBox);
 
     QGroupBox * fuzzyBox = new QGroupBox("Output");
-#ifndef Q_OS_MACOS
-    fuzzyBox->setFlat(true);
-#endif
     QRadioButton * fuzzy = new QRadioButton;
     fuzzy->setChecked(true);
     QRadioButton * randomDiscrete = new QRadioButton;

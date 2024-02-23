@@ -72,9 +72,6 @@ ExperimentalDesignWizard::ExperimentalDesignWizard(Data * data, PaintingWidget *
     connect(m_ch1SpinBox, &QSpinBox::valueChanged, this, &ExperimentalDesignWizard::setCh1TargetCount);
     m_ch1Layout->addRow("Number of targets:", m_ch1SpinBox);
     ch1Group->setLayout(m_ch1Layout);
-#ifndef Q_OS_MACOS
-    ch1Group->setFlat(true);
-#endif
     page1Layout->addWidget(ch1Group);
     setCh1TargetCount(m_design->ch1TargetCount());
 
@@ -86,9 +83,6 @@ ExperimentalDesignWizard::ExperimentalDesignWizard(Data * data, PaintingWidget *
     connect(m_ch2SpinBox, &QSpinBox::valueChanged, this, &ExperimentalDesignWizard::setCh2TargetCount);
     m_ch2Layout->addRow("Number of targets:", m_ch2SpinBox);
     ch2Group->setLayout(m_ch2Layout);
-#ifndef Q_OS_MACOS
-    ch2Group->setFlat(true);
-#endif
     page1Layout->addWidget(ch2Group);
     setCh2TargetCount(m_design->ch2TargetCount());
 
@@ -112,9 +106,6 @@ ExperimentalDesignWizard::ExperimentalDesignWizard(Data * data, PaintingWidget *
     staggeredLayout->addRow("Staggered in Channel 1", staggeredCh1);
     staggeredLayout->addRow("Staggered in Channel 2", staggeredCh2);
     staggeredGroup->setLayout(staggeredLayout);
-#ifndef Q_OS_MACOS
-    staggeredGroup->setFlat(true);
-#endif
     page1Layout->addWidget(staggeredGroup);
 
     page1Layout->setSizeConstraint(QLayout::SetFixedSize);

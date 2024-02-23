@@ -42,9 +42,6 @@ EMClusterMethodWidget::EMClusterMethodWidget(Data * data, DropletGraphWidget * g
     QGroupBox * initBox = new QGroupBox("Centroid Initialization", this);
     m_initBoxLayout = new QFormLayout;
     initBox->setLayout(m_initBoxLayout);
-#ifndef Q_OS_MACOS
-    initBox->setFlat(true);
-#endif
 
     m_centroidInit = new QComboBox(this);
     m_centroidInit->addItem("Current Colors",   CentroidInitialization::CurrentColors);
