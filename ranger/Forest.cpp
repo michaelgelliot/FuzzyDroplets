@@ -988,7 +988,6 @@ void Forest::showProgress(std::string operation, size_t max_progress) {
 
     if (progress > 0 && elapsed_time.count() > STATUS_INTERVAL) {
       double relative_progress = (double) progress / (double) max_progress;
-      qDebug() << round(100 * relative_progress);
       seconds time_from_start = duration_cast<seconds>(steady_clock::now() - start_time);
       uint remaining_time = (1 / relative_progress - 1) * time_from_start.count();
       if (verbose_out) {

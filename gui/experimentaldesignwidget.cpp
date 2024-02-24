@@ -7,6 +7,7 @@
 #include "core/data.h"
 #include "core/colorscheme.h"
 #include "gui/paintingwidget.h"
+#include "gui/dropletgraphwidget.h"
 
 #include <QBoxLayout>
 #include <QSpinBox>
@@ -185,7 +186,6 @@ ExperimentalDesignWizard::ExperimentalDesignWizard(Data * data, PaintingWidget *
     mainLayout->addStretch(1);
     mainLayout->addLayout(nextLayout);
     setLayout(mainLayout);
-
 }
 
 void ExperimentalDesignWizard::next()
@@ -275,6 +275,8 @@ void ExperimentalDesignWizard::setUpPage2()
         colorListTable->setItem(i, 0, item2);
         colorListTable->item(i,0)->setFlags(colorListTable->item(i,1)->flags() & ~(Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsEnabled));
         colorListTable->setCellWidget(i, 0, w);
+
+
     }
 }
 
@@ -519,12 +521,13 @@ void ExperimentalDesignWizard::saveToFile()
 
 
 
-ExperimentalDesignWidget::ExperimentalDesignWidget(Data * data, PaintingWidget * painting, CommandStack * cmdStack, SampleListWidget * list,  QWidget * parent)
+ExperimentalDesignWidget::ExperimentalDesignWidget(Data * data, PaintingWidget * painting, CommandStack * cmdStack, SampleListWidget * list, DropletGraphWidget * graph, QWidget * parent)
     : Plot::ScatterPlotBox2(parent),
     m_list(list),
     m_data(data),
     m_painting(painting),
-    m_commandStack(cmdStack)
+    m_commandStack(cmdStack),
+    m_graph(graph)
 {
     setMouseTracking(true);
     if (data->design()->isValid())
@@ -532,6 +535,35 @@ ExperimentalDesignWidget::ExperimentalDesignWidget(Data * data, PaintingWidget *
     else
         m_design.setTargetCounts(1,1);
     setupFromDataRange(m_data->bounds());
+
+
+    leftAxis()->setLabel(m_graph->leftAxis()->label());
+    leftAxis()->setVisibility(Plot::Axis::Component::Label, m_graph->leftAxis()->isVisible(Plot::Axis::Component::Label));
+    leftAxis()->setVisibility(Plot::Axis::Component::MajorTickLabel, m_graph->leftAxis()->isVisible(Plot::Axis::Component::MajorTickLabel));
+    leftAxis()->setVisibility(Plot::Axis::Component::MajorTick, m_graph->leftAxis()->isVisible(Plot::Axis::Component::MajorTick));
+    leftAxis()->setVisibility(Plot::Axis::Component::MediumTick, m_graph->leftAxis()->isVisible(Plot::Axis::Component::MediumTick));
+    leftAxis()->setVisibility(Plot::Axis::Component::MinorTick, m_graph->leftAxis()->isVisible(Plot::Axis::Component::MinorTick));
+
+    bottomAxis()->setLabel(m_graph->leftAxis()->label());
+    bottomAxis()->setVisibility(Plot::Axis::Component::Label, m_graph->bottomAxis()->isVisible(Plot::Axis::Component::Label));
+    bottomAxis()->setVisibility(Plot::Axis::Component::MajorTickLabel, m_graph->bottomAxis()->isVisible(Plot::Axis::Component::MajorTickLabel));
+    bottomAxis()->setVisibility(Plot::Axis::Component::MajorTick, m_graph->bottomAxis()->isVisible(Plot::Axis::Component::MajorTick));
+    bottomAxis()->setVisibility(Plot::Axis::Component::MediumTick, m_graph->bottomAxis()->isVisible(Plot::Axis::Component::MediumTick));
+    bottomAxis()->setVisibility(Plot::Axis::Component::MinorTick, m_graph->bottomAxis()->isVisible(Plot::Axis::Component::MinorTick));
+
+    topAxis()->setLabel(m_graph->topAxis()->label());
+    topAxis()->setVisibility(Plot::Axis::Component::Label, m_graph->topAxis()->isVisible(Plot::Axis::Component::Label));
+    topAxis()->setVisibility(Plot::Axis::Component::MajorTickLabel, m_graph->topAxis()->isVisible(Plot::Axis::Component::MajorTickLabel));
+    topAxis()->setVisibility(Plot::Axis::Component::MajorTick, m_graph->topAxis()->isVisible(Plot::Axis::Component::MajorTick));
+    topAxis()->setVisibility(Plot::Axis::Component::MediumTick, m_graph->topAxis()->isVisible(Plot::Axis::Component::MediumTick));
+    topAxis()->setVisibility(Plot::Axis::Component::MinorTick, m_graph->topAxis()->isVisible(Plot::Axis::Component::MinorTick));
+
+    rightAxis()->setLabel(m_graph->rightAxis()->label());
+    rightAxis()->setVisibility(Plot::Axis::Component::Label, m_graph->rightAxis()->isVisible(Plot::Axis::Component::Label));
+    rightAxis()->setVisibility(Plot::Axis::Component::MajorTickLabel, m_graph->rightAxis()->isVisible(Plot::Axis::Component::MajorTickLabel));
+    rightAxis()->setVisibility(Plot::Axis::Component::MajorTick, m_graph->rightAxis()->isVisible(Plot::Axis::Component::MajorTick));
+    rightAxis()->setVisibility(Plot::Axis::Component::MediumTick, m_graph->rightAxis()->isVisible(Plot::Axis::Component::MediumTick));
+    rightAxis()->setVisibility(Plot::Axis::Component::MinorTick, m_graph->rightAxis()->isVisible(Plot::Axis::Component::MinorTick));
 
 //    setZoomPanEnabled(false);
     m_wizard = new ExperimentalDesignWizard(data, painting, cmdStack, &m_design, this);
@@ -621,6 +653,7 @@ void ExperimentalDesignWidget::layoutChanged()
     m_textMarkers.clear();
     m_markers.resize(m_design.clusterCount());
     m_textMarkers.resize((m_design.clusterCount()));
+    m_markersCentres.resize(m_markers.size());
 
     std::random_device seed;
     std::mt19937 rng(seed());
@@ -634,7 +667,8 @@ void ExperimentalDesignWidget::layoutChanged()
             list.back()->setAutoColor(false);
             addDynamicPrimitive(list.back());
         }
-        m_textMarkers[i] = (new Plot::TextMarker(horizontalAxis(), verticalAxis(), m_design.clusterCentroid(i).x(), m_design.clusterCentroid(i).y() , QString::fromStdString(m_design.clusterLabel(i))));
+        m_markersCentres[i] = m_design.clusterCentroid(i);
+        m_textMarkers[i] = new Plot::TextMarker(horizontalAxis(), verticalAxis(), m_design.clusterCentroid(i).x(), m_design.clusterCentroid(i).y() , QString::fromStdString(m_design.clusterLabel(i)));
         addDynamicPrimitive(m_textMarkers[i]);
     }
 
@@ -658,9 +692,6 @@ void ExperimentalDesignWidget::updateGraphColors()
                 marker->setBrush(m_wizard->color(i));
             }
         }
-        for (auto * textMarker : m_textMarkers) {
-            textMarker->setVisibility(true);
-        }
     } else if (m_wizard->page() == 1) {
         for (int i = 0; i < m_markers.size(); ++i) {
             for (auto * marker : m_markers[i]) {
@@ -673,9 +704,6 @@ void ExperimentalDesignWidget::updateGraphColors()
                 marker->setVisibility(false);
             }
         }
-        for (auto * textMarker : m_textMarkers) {
-            textMarker->setVisibility(false);
-        }
     }
     update();
 }
@@ -685,6 +713,7 @@ void ExperimentalDesignWidget::startPositioningCentroids()
     m_positioningCentroids = true;
     m_list->setEnabled(true);
     m_pointCloud = new PointCloud(m_data, horizontalAxis(), verticalAxis());
+    m_pointCloud->setBaseSize(m_graph->pointCloud()->baseSize());
     m_pointCloud->setQuadTree(m_data->quadTree());
     addStaticPrimitive(m_pointCloud);
     if (m_data->design()->clusterCount() == m_design.clusterCount()) {
@@ -697,7 +726,11 @@ void ExperimentalDesignWidget::startPositioningCentroids()
         pen.setColor(m_wizard->color(i));
         m_centroidMarkers.back()->setPen(pen);
         addDynamicPrimitive(m_centroidMarkers.back());
+        m_textMarkers[i]->setValue(m_centroidMarkers[i]->x(), m_centroidMarkers[i]->y() + m_centroidMarkers[i]->size() * (((Plot::ContinuousAxis*)leftAxis())->valueLength() / leftAxis()->pixelLength()));
+
     }
+
+
     updateStaticPrimitives();
     update();
 }
@@ -710,6 +743,7 @@ void ExperimentalDesignWidget::stopPositioningCentroids()
         m_design.setClusterCentroid(i, Point(m_centroidMarkers[i]->x(), m_centroidMarkers[i]->y()));
         removeDynamicPrimitive(m_centroidMarkers[i]);
         delete m_centroidMarkers[i];
+        m_textMarkers[i]->setValue(m_markersCentres[i].x(), m_markersCentres[i].y());
     }
     m_centroidMarkers.clear();
     removeStaticPrimitive(m_pointCloud);
@@ -731,6 +765,7 @@ void ExperimentalDesignWidget::mouseMoveEvent(QMouseEvent * me)
     if (m_dragging) {
         m_centroidMarkers[m_selectedCentroid]->setValue(horizontalAxis()->value(me->pos().x() - viewport.left()) + m_dragOffset.x(), verticalAxis()->value(me->pos().y() - viewport.top()) + m_dragOffset.y());
         m_design.setClusterCentroid(m_selectedCentroid, Point(m_centroidMarkers[m_selectedCentroid]->x(),  m_centroidMarkers[m_selectedCentroid]->y()));
+        m_textMarkers[m_selectedCentroid]->setValue(m_centroidMarkers[m_selectedCentroid]->x(), m_centroidMarkers[m_selectedCentroid]->y() + m_centroidMarkers[m_selectedCentroid]->size() * (((Plot::ContinuousAxis*)leftAxis())->valueLength() / leftAxis()->pixelLength()));
         update();
     } else {
         m_selectedCentroid = -1;

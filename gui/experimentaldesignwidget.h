@@ -19,6 +19,7 @@ class SampleListWidget;
 class PointCloud;
 class PaintingWidget;
 class QToolButton;
+class DropletGraphWidget;
 
 namespace Plot
 {
@@ -85,6 +86,7 @@ signals:
     void updateGraphColors();
     void startPositioningCentroids();
     void stopPositioningCentroids();
+    void settingPage(int);
 
 private:
 
@@ -126,7 +128,7 @@ class ExperimentalDesignWidget : public Plot::ScatterPlotBox2
 
 public:
 
-    ExperimentalDesignWidget(Data * data, PaintingWidget * painting, CommandStack * cmdStack, SampleListWidget * list, QWidget * parent = nullptr);
+    ExperimentalDesignWidget(Data * data, PaintingWidget * painting, CommandStack * cmdStack, SampleListWidget * list, DropletGraphWidget * graph, QWidget * parent = nullptr);
 
     void run();
 
@@ -156,6 +158,7 @@ private:
 
     ExperimentalDesignWizard * m_wizard {nullptr};
     QList<QList<Plot::Marker2D*>> m_markers;
+    QList<Point> m_markersCentres;
     QList<Plot::TextMarker *> m_textMarkers;
     Design m_design;
     bool m_positioningCentroids{false};
@@ -165,10 +168,10 @@ private:
     PaintingWidget * m_painting;
     CommandStack * m_commandStack;
     PointCloud * m_pointCloud {nullptr};
-
     int m_selectedCentroid {-1};
     bool m_dragging {false};
     Point m_dragOffset;
+    DropletGraphWidget * m_graph;
 };
 
 #endif // EXPERIMENTALDESIGNWIDGET_H

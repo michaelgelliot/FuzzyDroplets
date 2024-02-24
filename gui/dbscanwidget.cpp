@@ -193,6 +193,5 @@ void DBScanWorker::increaseCompletedPointCount()
 
 void DBScanWorker::cancel()
 {
-    qDebug("here");
     m_cancelled = true;
 }

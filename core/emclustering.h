@@ -87,7 +87,7 @@ public:
             improvement = score - newScore;
             score = newScore;
             if (count > m_maxIters) {
-                qDebug("hit max iters");
+                qDebug("hit max iters"); //todo
                 break;
             }
         }

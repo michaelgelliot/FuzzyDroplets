@@ -514,7 +514,7 @@ void MainWindow::processFileLoadErrorMessage(const std::string & error)
 void MainWindow::showExperimentalDesignDialog()
 {
     if (m_splitter->indexOf(m_graphWidget) != -1) {
-        m_designWidget = new ExperimentalDesignWidget(m_data, m_paintingWidget, m_commandStack, m_sampleListWidget, this);
+        m_designWidget = new ExperimentalDesignWidget(m_data, m_paintingWidget, m_commandStack, m_sampleListWidget, m_graphWidget, this);
         connect(m_designWidget, &ExperimentalDesignWidget::closed, this, &MainWindow::hideExperimentalDesignDialog);
         auto sizes = m_splitter->sizes();
         m_splitter->replaceWidget(1, m_designWidget);

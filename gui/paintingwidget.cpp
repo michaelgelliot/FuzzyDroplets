@@ -25,6 +25,7 @@
 #include <QToolTip>
 #include <QThread>
 #include <QGuiApplication>
+#include <atomic>
 #include <QStyleHints>
 #include "core/matrix.h"
 #include "core/kernel.h"
@@ -463,7 +464,7 @@ void BoxBlurWorker::go()
     std::iota(iota.begin(), iota.end(), 0);
 
     int pc = 0;
-    size_t count = 0;
+    std::atomic<size_t> count = 0;
 
 #ifndef Q_OS_MACOS
     std::for_each(std::execution::par, iota.begin(), iota.end(), [&](size_t & id) {
