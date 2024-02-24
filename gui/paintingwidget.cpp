@@ -250,7 +250,7 @@ void PaintingWidget::PaintStrokeCommand::undo()
 {
 #ifndef Q_OS_MACOS
     std::for_each(std::execution::par, m_data.begin(), m_data.end(), [&](auto & tuple) {
-        m_paintingWidget->data()->setColor(std::get<0>(tuple), std::get<2>(tuple));
+        m_paintingWidget->data()->setColor(std::get<0>(tuple), std::get<1>(tuple));
     });
 #else
     QtConcurrent::blockingMap(m_data.begin(), m_data.end(), [&](auto & tuple) {
@@ -450,121 +450,55 @@ void BoxBlurWorker::go()
 {
     emit updateProgress(0);
 
-    std::vector<size_t> points;
-    points.reserve(m_data->selectedPointCount());
-    for (size_t i =0; i < m_data->pointCount(); ++i) {
-        if (m_data->isSelected(i))
-            points.push_back(i);
+    QList<size_t> selectedPoints;
+    selectedPoints.reserve(m_data->selectedPointCount());
+    for (auto i : m_data->selectedSamples()) {
+        for (size_t k = m_data->sampleIndices(i)[0]; k < m_data->sampleIndices(i)[1]; ++k) {
+            selectedPoints.push_back(k);
+        }
     }
 
-    // create an in-memory graph with axes such that they cover approximately a million pixels
+    QList<FuzzyColor> newColors(selectedPoints.size(), FuzzyColor(m_data->colorComponentCount()));
+    QList<size_t> iota(selectedPoints.size());
+    std::iota(iota.begin(), iota.end(), 0);
 
-    size_t xMin = m_data->point(*std::min_element(points.begin(), points.end(), [&](size_t left, size_t right){return m_data->point(left).x() < m_data->point(right).x();})).x();
-    size_t yMin = m_data->point(*std::min_element(points.begin(), points.end(), [&](size_t left, size_t right){return m_data->point(left).y() < m_data->point(right).y();})).y();
-    size_t xMax = m_data->point(*std::max_element(points.begin(), points.end(), [&](size_t left, size_t right){return m_data->point(left).x() < m_data->point(right).x();})).x();
-    size_t yMax = m_data->point(*std::max_element(points.begin(), points.end(), [&](size_t left, size_t right){return m_data->point(left).y() < m_data->point(right).y();})).y();
+    int pc = 0;
+    size_t count = 0;
 
-    auto xScale = m_data->bounds().width() / (m_data->bounds().width() + m_data->bounds().height());
-    auto yScale = m_data->bounds().height() / (m_data->bounds().width() + m_data->bounds().height());
-    auto z = 1000.0 / sqrt(xScale - xScale*xScale);
-
-    Plot::ContinuousAxis xAxis;
-    xAxis.setAbsoluteRange(xMin - 1, xMax + 1);
-    xAxis.setRange(xMin - 1, xMax + 1);
-    xAxis.setPixelLength(z * xScale);
-
-    Plot::ContinuousAxis yAxis;
-    yAxis.setAbsoluteRange(yMin - 1, yMax + 1);
-    yAxis.setRange(yMin - 1, yMax + 1);
-    yAxis.setPixelLength(z * yScale);
-
-    double Q = (1.0 + m_graph->pointCloud()->scaleFactor() * (m_graph->horizontalAxis()->absoluteValueLength() / xAxis.valueLength() - 1.0));
-    xAxis.setPixelLength((int)(xAxis.pixelLength() / Q));
-    yAxis.setPixelLength((int)(yAxis.pixelLength() / Q));
-
-    int S = m_graph->pointCloud()->baseSize();
-    int S2 = S/2 + ((S % 2) == 1);
-    S /= 2;
-
-    // construct the pixel data for the in-memory graph
-    std::vector<FuzzyColor> pixelData((int)xAxis.pixelLength() * (int)yAxis.pixelLength(), FuzzyColor(m_data->colorComponentCount()));
-
-    m_percent = 0;
-    double count =  0;
-    double total = pixelData.size() / 100 + pixelData.size() + points.size() / 100;
-
-
-    std::for_each(points.begin(), points.end(), [&](const auto & p) {
-        auto pt = m_data->point(p);
-        size_t x = xAxis.pixel(pt.x());
-        size_t y = yAxis.pixel(pt.y());
-        auto col = m_data->fuzzyColor(p);
-        for (int Y = std::max(0, (int)(y - S)); Y < std::min((int)yAxis.pixelLength() - 1, (int)(y + S2)); ++Y) {
-            for (int X = std::max(0, (int)(x - S)); X < std::min((int)xAxis.pixelLength() - 1, (int)(x + S2)); ++X) {
-                int index = Y * (int)xAxis.pixelLength() + X;
-                for (auto z = 0; z < m_data->colorComponentCount(); ++z) {
-                    pixelData[index].setWeight(z, pixelData[index].weight(z) + col.weight(z));
-                }
-            }
-        }
-        count += 0.01;
-        int pc = 100 * count / total;
-        if (pc != m_percent) {
-            m_percent = pc;
-            emit updateProgress(pc);
-        }
-    });
-    for (auto & col : pixelData) col.normalize();
-
-    // blur the pixel data
-    double unit = m_graph->horizontalAxis()->pixelLength() / (m_graph->horizontalAxis()->absoluteMaximum() - m_graph->horizontalAxis()->minimum());
-    S = m_sliderValue * unit/*m_graph->horizontalUnit()*/ * xAxis.pixelLength() / m_graph->horizontalAxis()->pixelLength();
-    S2 = S/2 + ((S % 2) == 1);
-    S /= 2;
-    double SS = S * S;
-    std::vector<FuzzyColor> blurredPixelData(pixelData.size(), FuzzyColor(m_data->colorComponentCount()));
-    QList<size_t> blurIota(blurredPixelData.size());
-    std::iota(blurIota.begin(), blurIota.end(), 0);
-
-#ifdef Q_OS_MACOS
-    QtConcurrent::blockingMap(blurIota.begin(), blurIota.end(), [&](size_t & target) {
+#ifndef Q_OS_MACOS
+    std::for_each(std::execution::par, iota.begin(), iota.end(), [&](size_t & id) {
 #else
-    std::for_each (std::execution::par, blurIota.begin(), blurIota.end(), [&](size_t target) {
+    QtConcurrent::blockingMap(iota.begin(), iota.end(), [&](size_t & idx) {
 #endif
-        auto [x,y] = coordinates(target, (int)xAxis.pixelLength());
-        for (int Y = std::max(0, (int)(y - S)); Y < std::min((int)yAxis.pixelLength() - 1, (int)(y + S2)); ++Y) {
-            auto inCircleOnY = pow((int)y-Y,2);
-            for (int X = std::max(0, (int)(x - S)); X < std::min((int)xAxis.pixelLength() - 1, (int)(x + S2)); ++X) {
-                if (pow((int)x-X,2) + inCircleOnY <= SS) {
-                    int index = Y * (int)xAxis.pixelLength() + X;
-                    for (auto z = 0; z < m_data->colorComponentCount(); ++z)
-                        blurredPixelData[target].setWeight(z, blurredPixelData[target].weight(z) + pixelData[index].weight(z));
-                }
-            }
-        }
         ++count;
-        int pc = 100 * count / total;
-        if (pc != m_percent) {
-            m_percent = pc;
+        size_t newPc = 100 * count / m_data->selectedPointCount();
+        if (newPc != pc) {
+            pc = newPc;
             emit updateProgress(pc);
         }
+        double w = ((double)m_sliderValue/2);
+        double w2 = pow(w, 2);
+        auto value = m_data->point(selectedPoints[id]);
+        OrthogonalRectangle rect(value + Point(-w, -w), 2*w, 2*w);
+        QList<size_t> items;
+        items = m_data->rectangleSearchSelection(rect, [&](size_t i) {
+            return m_data->isSelected(i) && pow(m_data->point(i).x() - value.x(),2) + pow((m_data->point(i).y() - value.y()),2) < w2;
+        });
+        if (items.size() == 0) {
+            newColors[id] = m_data->fuzzyColor(selectedPoints[id]);
+        } else {
+            for (auto & item : items) {
+                for (auto component = 0; component < newColors[id].componentCount(); ++component)
+                    newColors[id].setWeight(component, newColors[id].weight(component) + std::max(0.0, m_data->fuzzyColor(item).weight(component)));
+            }
+            newColors[id].normalize();
+        }
     });
-    for (auto & col : blurredPixelData) col.normalize();
 
-    // transfer pixel values back to the real data
-    std::for_each(points.begin(), points.end(), [&](const auto & p) {
-        auto pt = m_data->point(p);
-        size_t x = xAxis.pixel(pt.x());
-        size_t y = yAxis.pixel(pt.y());
-        size_t target = y * (int)xAxis.pixelLength() + x;
-        m_data->setColor(p, blurredPixelData[target]);
-        count += 0.01;
-        int pc = 100 * count / total;
-        if (pc != m_percent) {
-            m_percent = pc;
-            emit updateProgress(pc);
-        }
-    });
+
+    for (auto id : iota) {
+        m_data->setColor(selectedPoints[id], newColors[id]);
+    }
 
     emit updateProgress(100);
 

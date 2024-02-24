@@ -167,6 +167,9 @@ MainWindow::MainWindow(QWidget *parent)
         z2->setChecked(true);
     }
 
+    auto helpMenu = menuBar()->addMenu("Help");
+    helpMenu->addAction("How to Cite...", this, &MainWindow::citation);
+
     m_leftAxisMenu = viewMenu->addMenu(themedIcon(":/borderLeft"), "Left Axis");
     auto leftAxisLabel = m_leftAxisMenu->addAction("Label"); leftAxisLabel->setCheckable(true); leftAxisLabel->setData(Plot::Axis::Label);
     auto leftAxisNumbers = m_leftAxisMenu->addAction("Numbers"); leftAxisNumbers->setCheckable(true); leftAxisNumbers->setData(Plot::Axis::MajorTickLabel);
@@ -693,4 +696,24 @@ void MainWindow::selectedSamplesChanged()
     m_zoomInAction->setEnabled(m_data->selectedSamples().size() > 0);
     m_zoomOutAction->setEnabled(m_data->selectedSamples().size() > 0);
     m_zoomResetAction->setEnabled(m_data->selectedSamples().size() > 0);
+}
+
+void MainWindow::citation()
+{
+    QDialog d;
+    d.setWindowTitle("How to Cite");
+    QVBoxLayout * layout = new QVBoxLayout;
+    QTextEdit *e = new QTextEdit;
+
+    QString citation = "<p>If you use Random Forest, please additionally cite:</p>";
+    citation += "<p>Wright, M. N. & Ziegler, A. (2017). ranger: A fast implementation of random forests for high dimensional data in C++ and R. <i>Journal of Statistical Software</i> 77:1-17. https://doi.org/10.18637/jss.v077.i01.</p>";
+
+    e->setHtml(citation);
+    e->setReadOnly(true);
+    layout->addWidget(e);
+    auto buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok);
+    connect(buttonBox, &QDialogButtonBox::accepted, &d, &QDialog::accept);
+    layout->addWidget(buttonBox);
+    d.setLayout(layout);
+    d.exec();
 }

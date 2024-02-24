@@ -12,7 +12,7 @@ class FuzzyColor
 public:
 
     FuzzyColor(size_t numComponents = 0)
-        : m_weights(numComponents, 0)
+        : m_weights(numComponents, 0.0)
     {
     }
 

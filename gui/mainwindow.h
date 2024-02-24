@@ -60,6 +60,7 @@ private slots:
     void parallelWorkFinished();
     void designChanged();
     void selectedSamplesChanged();
+    void citation();
 
 private:
 
