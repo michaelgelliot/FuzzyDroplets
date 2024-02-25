@@ -42,7 +42,7 @@ void PointCloud::render(QPainter & painter)
     QtConcurrent::blockingMap(m_pixelData.begin(), m_pixelData.end(), [](QRgb & color) {color = Color::named::transparent;});
 #endif
 
-    const double limit = 1.0/m_data->colorComponentCount();
+    const double limit = std::max(1.0/m_data->colorComponentCount(), 0.999);
 
     if (painter.paintEngine()->type() == QPaintEngine::SVG) {
 
@@ -72,7 +72,7 @@ void PointCloud::render(QPainter & painter)
             QtConcurrent::blockingMap(items.begin(), items.end(), [&](auto & p) {
 #endif
                 //if (m_data->fuzzyColor(p).dominantComponent() == col) {
-                if (m_data->fuzzyColor(p).weight(col) > limit) {
+                if (m_data->fuzzyColor(p).weight(col) >= limit) {
                     auto pt = m_data->point(p);
                     drawSquare(S, S2, m_xAxis->pixel(pt.x()) * dpr, m_yAxis->pixel(pt.y()) * dpr, m_data->rgba(p), m_pixelData);
                 }

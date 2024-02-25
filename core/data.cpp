@@ -33,6 +33,7 @@ Data::Data(QObject * parent)
 Data::Data()
     : m_colorScheme(new ColorScheme)
 {
+    m_colorScheme->setColor(0, qGuiApp->styleHints()->colorScheme() == Qt::ColorScheme::Dark ? Color::named::white : Color::named::black);
 }
 #endif
 
