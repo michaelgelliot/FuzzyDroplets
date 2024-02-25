@@ -154,7 +154,7 @@ QList<size_t> AssignmentWidget::targetIndices() const
         for (int i = 0; i < m_data->sampleCount(); ++i) {
             if (m_data->sampleType(i) == Data::SampleType::Experimental) {
                 auto bounds = m_data->sampleIndices(i);
-                for (int i = bounds[0]; i < bounds[1]; ++i) {
+                for (auto i = bounds[0]; i < bounds[1]; ++i) {
                     target.push_back(i);
                 }
             }
@@ -162,7 +162,7 @@ QList<size_t> AssignmentWidget::targetIndices() const
     } else { // target selection
         for (auto sampleIdx : m_data->selectedSamples()) {
             auto bounds = m_data->sampleIndices(sampleIdx);
-            for (int i = bounds[0]; i < bounds[1]; ++i) {
+            for (auto i = bounds[0]; i < bounds[1]; ++i) {
                 target.push_back(i);
             }
         }
@@ -178,7 +178,7 @@ QList<size_t> AssignmentWidget::sourceIndices() const
         for (int i = 0; i < m_data->sampleCount(); ++i) {
             if (m_data->sampleType(i) == Data::SampleType::PositiveControl && !(m_targetComboBox->currentIndex() == 0 && m_data->sampleType(i) == Data::SampleType::Experimental)) {
                 auto bounds = m_data->sampleIndices(i);
-                for (int j = bounds[0]; j < bounds[1]; ++j) {
+                for (auto j = bounds[0]; j < bounds[1]; ++j) {
                     if (!(m_targetComboBox->currentIndex() == 1 && m_data->isSelected(j)))
                         source.push_back(j);
                 }
@@ -190,7 +190,7 @@ QList<size_t> AssignmentWidget::sourceIndices() const
         for (int i = 0; i < m_data->sampleCount(); ++i) {
             if (m_data->sampleType(i) == Data::SampleType::NegativeControl && !(m_targetComboBox->currentIndex() == 0 && m_data->sampleType(i) == Data::SampleType::Experimental)) {
                 auto bounds = m_data->sampleIndices(i);
-                for (int j = bounds[0]; j < bounds[1]; ++j) {
+                for (auto j = bounds[0]; j < bounds[1]; ++j) {
                     if (!(m_targetComboBox->currentIndex() == 1 && m_data->isSelected(j)))
                         source.push_back(j);
                 }
@@ -202,7 +202,7 @@ QList<size_t> AssignmentWidget::sourceIndices() const
         for (int i = 0; i < m_data->sampleCount(); ++i) {
             if (m_data->sampleType(i) == Data::SampleType::NonTemplateControl && !(m_targetComboBox->currentIndex() == 0 && m_data->sampleType(i) == Data::SampleType::Experimental)) {
                 auto bounds = m_data->sampleIndices(i);
-                for (int j = bounds[0]; j < bounds[1]; ++j) {
+                for (auto j = bounds[0]; j < bounds[1]; ++j) {
                     if (!(m_targetComboBox->currentIndex() == 1 && m_data->isSelected(j)))
                         source.push_back(j);
                 }

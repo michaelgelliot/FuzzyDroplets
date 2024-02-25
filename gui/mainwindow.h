@@ -40,8 +40,6 @@ public slots:
     void addDataFiles();
     void addFolder();
     bool exportAll();
-    void exportSVGSquare();
-    void exportSVGRound();
     void exportJPGSquare();
     void exportJPGRound();
     void exportTIFFSquare();
@@ -68,7 +66,6 @@ private:
 
     void processFileLoadErrorMessage(const std::string & error);
     void setAxisComponentVisibility(QString name, Plot::Axis * axis, Plot::Axis::Component component, bool visible);
-    void exportSVG();
     void exportJPG();
     void exportTIFF();
 
@@ -93,8 +90,6 @@ private:
     QAction * m_undoAction;
     QAction * m_redoAction;
     QAction * m_convexHullAction;
-    QAction * m_svgSquareAction;
-    QAction * m_svgRoundAction;
     QAction * m_jpgSquareAction;
     QAction * m_jpgRoundAction;
     QAction * m_tiffSquareAction;
@@ -102,7 +97,6 @@ private:
     QAction * m_zoomInAction;
     QAction * m_zoomOutAction;
     QAction * m_zoomResetAction;
-    QMenu * m_svgMenu;
     QMenu * m_jpgMenu;
     QMenu * m_tiffMenu;
     QMenu * m_topAxisMenu;

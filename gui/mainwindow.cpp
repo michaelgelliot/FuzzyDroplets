@@ -24,7 +24,6 @@
 #include <QSplitter>
 #include <QMenuBar>
 #include <QMessageBox>
-#include <QSvgRenderer>
 #include <QImageWriter>
 #include <QTemporaryFile>
 #include <QBoxLayout>
@@ -84,10 +83,6 @@ MainWindow::MainWindow(QWidget *parent)
     m_saveAction = fileMenu->addAction(themedIcon(":/save"), "Save As...", this, &MainWindow::exportAll);
     m_saveAction->setEnabled(false);
     fileMenu->addSeparator();
-    m_svgMenu = fileMenu->addMenu("Export SVG");
-    m_svgSquareAction = m_svgMenu->addAction(themedIcon(":/square"), "Square Markers...", this, &MainWindow::exportSVGSquare);
-    m_svgRoundAction = m_svgMenu->addAction(themedIcon(":/circle"), "Round Markers...", this, &MainWindow::exportSVGRound);
-    m_svgMenu->setEnabled(false);
     m_jpgMenu = fileMenu->addMenu("Export JPEG");
     m_jpgSquareAction = m_jpgMenu->addAction(themedIcon(":/square"),"Square Markers...", this, &MainWindow::exportJPGSquare);
     m_jpgRoundAction = m_jpgMenu->addAction(themedIcon(":/circle"), "Round Markers...", this, &MainWindow::exportJPGRound);
@@ -335,8 +330,6 @@ void MainWindow::guiColorSchemeChanged()
     m_bottomAxisMenu->setIcon(themedIcon(":/borderBottom"));
     m_leftAxisMenu->setIcon(themedIcon(":/borderLeft"));
     m_rightAxisMenu->setIcon(themedIcon(":/borderRight"));
-    m_svgSquareAction->setIcon(themedIcon(":/square"));
-    m_svgRoundAction->setIcon(themedIcon(":/circle"));
     m_jpgSquareAction->setIcon(themedIcon(":/square"));
     m_jpgRoundAction->setIcon(themedIcon(":/circle"));
     m_zoomInAction->setIcon(themedIcon(":/zoomIn"));
@@ -449,7 +442,6 @@ void MainWindow::addDataFiles()
     m_convexHullAction->setEnabled(m_data->pointCount() > 0);
     m_selectionMenu->setEnabled(m_data->pointCount() > 0);
     m_saveAction->setEnabled(m_data->pointCount() > 0);
-    m_svgMenu->setEnabled(m_data->pointCount() > 0);
     m_jpgMenu->setEnabled(m_data->pointCount() > 0);
     m_tiffMenu->setEnabled(m_data->pointCount() > 0);
 }
@@ -496,7 +488,6 @@ void MainWindow::addFolder()
     m_convexHullAction->setEnabled(m_data->pointCount() > 0);
     m_selectionMenu->setEnabled(m_data->pointCount() > 0);
     m_saveAction->setEnabled(m_data->pointCount() > 0);
-    m_svgMenu->setEnabled(m_data->pointCount() > 0);
     m_jpgMenu->setEnabled(m_data->pointCount() > 0);
     m_tiffMenu->setEnabled(m_data->pointCount() > 0);
 }
@@ -595,18 +586,6 @@ bool MainWindow::exportAll()
     return false;
 }
 
-void MainWindow::exportSVGSquare()
-{
-    m_graphWidget->pointCloud()->setRoundSvgMarkers(false);
-    exportSVG();
-}
-
-void MainWindow::exportSVGRound()
-{
-    m_graphWidget->pointCloud()->setRoundSvgMarkers(true);
-    exportSVG();
-}
-
 void MainWindow::exportJPGSquare()
 {
     m_graphWidget->pointCloud()->setRoundSvgMarkers(false);
@@ -631,17 +610,6 @@ void MainWindow::exportTIFFRound()
     exportTIFF();
 }
 
-void MainWindow::exportSVG()
-{
-    QSettings settings;
-    auto file = QFileDialog::getSaveFileName(this, "", settings.value("exportDir", QDir::homePath()).toString(), "SVG Files (*.svg)");
-    if (!file.isEmpty()) {
-        QFileInfo fi(file);
-        settings.setValue("exportDir", fi.absolutePath());
-        m_graphWidget->exportSvg(file.toStdString());
-    }
-}
-
 void MainWindow::exportJPG()
 {
     QSettings settings;
@@ -664,7 +632,7 @@ void MainWindow::exportTIFF()
         QFileInfo fi(output);
         settings.setValue("exportDir", fi.absolutePath());
         auto img = m_graphWidget->image(10);
-        int dpm = 300 / 0.0254; // ~300 DPI
+        int dpm = 350 / 0.0254; // ~350 DPI
         img.setDotsPerMeterX(dpm);
         img.setDotsPerMeterY(dpm);
         QImageWriter writer(output);

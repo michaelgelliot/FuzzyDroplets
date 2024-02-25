@@ -5,7 +5,6 @@
 #include <QStyleHints>
 #include <QGuiApplication>
 #include <QPainterPath>
-#include <QSvgGenerator>
 #include <QPaintEngine>
 
 namespace Plot
@@ -284,85 +283,6 @@ void BoxGraphBase::guiColorSchemeChanged()
     m_bottomAxis->updateLabelPixmap(devicePixelRatio());
     updateStaticPrimitives();
     update();
-}
-
-void BoxGraphBase::exportSvg(const std::string & path)
-{
-    QList<QFont> fonts;
-    fonts.push_back(m_leftAxis->labelFont());
-    fonts.push_back(m_leftAxis->majorTickLabelFont());
-    fonts.push_back(m_leftAxis->mediumTickLabelFont());
-    fonts.push_back(m_leftAxis->minorTickLabelFont());
-    fonts.push_back(m_rightAxis->labelFont());
-    fonts.push_back(m_rightAxis->majorTickLabelFont());
-    fonts.push_back(m_rightAxis->mediumTickLabelFont());
-    fonts.push_back(m_rightAxis->minorTickLabelFont());
-    fonts.push_back(m_topAxis->labelFont());
-    fonts.push_back(m_topAxis->majorTickLabelFont());
-    fonts.push_back(m_topAxis->mediumTickLabelFont());
-    fonts.push_back(m_topAxis->minorTickLabelFont());
-    fonts.push_back(m_bottomAxis->labelFont());
-    fonts.push_back(m_bottomAxis->majorTickLabelFont());
-    fonts.push_back(m_bottomAxis->mediumTickLabelFont());
-    fonts.push_back(m_bottomAxis->minorTickLabelFont());
-
-    for (auto & font : fonts) {
-        font.setPointSizeF(font.pointSizeF() * devicePixelRatio());
-    }
-
-    m_leftAxis->setLabelFont(fonts[0]);
-    m_leftAxis->setMajorTickLabelFont(fonts[1]);
-    m_leftAxis->setMediumTickLabelFont(fonts[2]);
-    m_leftAxis->setMinorTickLabelFont(fonts[3]);
-    m_rightAxis->setLabelFont(fonts[4]);
-    m_rightAxis->setMajorTickLabelFont(fonts[5]);
-    m_rightAxis->setMediumTickLabelFont(fonts[6]);
-    m_rightAxis->setMinorTickLabelFont(fonts[7]);
-    m_topAxis->setLabelFont(fonts[8]);
-    m_topAxis->setMajorTickLabelFont(fonts[9]);
-    m_topAxis->setMediumTickLabelFont(fonts[10]);
-    m_topAxis->setMinorTickLabelFont(fonts[11]);
-    m_bottomAxis->setLabelFont(fonts[12]);
-    m_bottomAxis->setMajorTickLabelFont(fonts[13]);
-    m_bottomAxis->setMediumTickLabelFont(fonts[14]);
-    m_bottomAxis->setMinorTickLabelFont(fonts[15]);
-
-    recalculateLayout();
-
-    QSvgGenerator generator;
-    generator.setFileName(QString::fromStdString(path));
-    generator.setSize(QSize(m_staticPixmap.width() / devicePixelRatio(), m_staticPixmap.height() / devicePixelRatio()));
-    generator.setViewBox(QRect(0, 0, m_staticPixmap.width() / devicePixelRatio(), m_staticPixmap.height() / devicePixelRatio()));
-    generator.setTitle(tr("Droplets"));
-
-    QPainter paint;
-    paint.begin(&generator);
-    paint.setRenderHint(QPainter::Antialiasing);
-    render(paint, true);
-    paint.end();
-
-    for (auto & font : fonts) {
-        font.setPointSizeF(font.pointSizeF() / devicePixelRatio());
-    }
-
-    m_leftAxis->setLabelFont(fonts[0]);
-    m_leftAxis->setMajorTickLabelFont(fonts[1]);
-    m_leftAxis->setMediumTickLabelFont(fonts[2]);
-    m_leftAxis->setMinorTickLabelFont(fonts[3]);
-    m_rightAxis->setLabelFont(fonts[4]);
-    m_rightAxis->setMajorTickLabelFont(fonts[5]);
-    m_rightAxis->setMediumTickLabelFont(fonts[6]);
-    m_rightAxis->setMinorTickLabelFont(fonts[7]);
-    m_topAxis->setLabelFont(fonts[8]);
-    m_topAxis->setMajorTickLabelFont(fonts[9]);
-    m_topAxis->setMediumTickLabelFont(fonts[10]);
-    m_topAxis->setMinorTickLabelFont(fonts[11]);
-    m_bottomAxis->setLabelFont(fonts[12]);
-    m_bottomAxis->setMajorTickLabelFont(fonts[13]);
-    m_bottomAxis->setMediumTickLabelFont(fonts[14]);
-    m_bottomAxis->setMinorTickLabelFont(fonts[15]);
-
-    recalculateLayout();
 }
 
 QImage BoxGraphBase::image(double scale)

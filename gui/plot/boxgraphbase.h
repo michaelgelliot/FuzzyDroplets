@@ -42,7 +42,6 @@ public:
     virtual void render(QPainter & paint, bool highQualityOutput = false) override;
     virtual void updateStaticPrimitives(const QRectF & clipRect = QRectF());
 
-    void exportSvg(const std::string & path);
     QSize bufferSize() const {return m_staticPixmap.size();}
 
     const Axis * leftAxis() const {return m_leftAxis;}

@@ -210,7 +210,7 @@ void DropletGraphWidget::setConvexHullsVisible(bool b)
 
 void DropletGraphWidget::updateConvexHullCount()
 {
-    if (m_data->colorComponentCount() > m_convexHulls.size()) {
+    if (m_data->colorComponentCount() > (size_t)m_convexHulls.size()) {
         for (size_t i = m_convexHulls.size() + 1; i < m_data->colorComponentCount() ; ++i) {
             Plot::Polygon * p = new Plot::Polygon(horizontalAxis(), verticalAxis());
             p->setAutoColor(false);

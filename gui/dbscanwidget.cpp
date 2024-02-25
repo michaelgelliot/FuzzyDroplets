@@ -8,7 +8,6 @@
 #include <QMouseEvent>
 #include <QThread>
 #include <unordered_set>
-#include <set>
 #include "core/data.h"
 
 DBScanWidget::DBScanWidget(Data * data, DropletGraphWidget * graph, QWidget *parent)
