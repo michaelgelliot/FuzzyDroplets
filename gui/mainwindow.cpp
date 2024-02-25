@@ -567,10 +567,14 @@ bool MainWindow::exportAll()
             QTextStream ts(&file);
             auto indices = m_data->sampleIndices(i);
             for (size_t pos = indices[0]; pos < indices[1]; ++pos) {
-                ts << m_data->point(pos).y() << "," << m_data->point(pos).x() << "," ;
+                ts.setRealNumberPrecision(m_data->precision(pos).second);
+                ts << m_data->point(pos).y() << ",";
+                ts.setRealNumberPrecision(m_data->precision(pos).first);
+                ts << m_data->point(pos).x() << "," ;
                 if (m_data->colorComponentCount() < 2) {
                     ts << "0" << Qt::endl;
                 } else {
+                    ts.setRealNumberPrecision(6);
                     for (size_t col = 1; col < m_data->colorComponentCount(); ++col) {
                         ts << m_data->fuzzyColor(pos).weight(col);
                         if (col < m_data->colorComponentCount() - 1)

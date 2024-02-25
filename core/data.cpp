@@ -449,12 +449,14 @@ void Data::addSamples(const std::vector<std::string> & paths, std::string & erro
         while (!feeder.atEnd()) {
 
             double x, y;
+            double xPrecision, yPrecision;
 
             auto line = feeder.getLine();
             size_t pos1 = line.find(',');
             if (pos1 == std::string_view::npos) {
                 m_samples.pop_back();
                 m_points.resize(oldPointCount);
+                m_precision.resize(oldPointCount);
                 error += "Skipped file: " + path + "\n";
                 std::stringstream ss;
                 ss << lineCount;
@@ -469,6 +471,8 @@ void Data::addSamples(const std::vector<std::string> & paths, std::string & erro
 #ifndef Q_OS_MACOS
             auto err1 = std::from_chars(line.data(), line.data() + pos1, y);
             auto err2 = std::from_chars(line.data() + pos1 + 1, line.data() + pos2, x);
+            yPrecision = std::count_if(line.data(), line.data() + pos1, [](char ch){return std::isdigit(ch);});
+            xPrecision = std::count_if(line.data() + pos1 + 1, line.data() + pos2, [](char ch){return std::isdigit(ch);});
             if (err1.ec != std::errc() || err2.ec != std::errc()) {
                 if (lineCount == 0)
                     continue;
@@ -486,6 +490,8 @@ void Data::addSamples(const std::vector<std::string> & paths, std::string & erro
             std::string X(line.data() + pos1 + 1, line.data() + pos2);
             y = std::strtod(Y.data(), &err1);
             x = std::strtod(X.data(), &err2);
+            yPrecision = std::count_if(line.data(), line.data() + pos1, [](char ch){return std::isdigit(ch);});
+            xPrecision = std::count_if(line.data() + pos1 + 1, line.data() + pos2, [](char ch){return std::isdigit(ch);});
             if (err1 == Y.data() || err2 == X.data() || x == HUGE_VAL || y == HUGE_VAL ) {
                 if (lineCount == 0)
                     continue;
@@ -499,6 +505,7 @@ void Data::addSamples(const std::vector<std::string> & paths, std::string & erro
 #endif
 
             m_points.push_back({x,y});
+            m_precision.push_back({xPrecision, yPrecision});
 
             m_colors.push_back(unassigned);
             m_rgba.push_back(unassignedRgb);
@@ -584,6 +591,7 @@ void Data::addSamples(const std::vector<std::string> & paths, std::string & erro
     }
 
     m_points.shrink_to_fit();
+    m_precision.shrink_to_fit();
     m_colors.shrink_to_fit();
     m_selected.resize(m_points.size(), false);
     updateDataBounds();

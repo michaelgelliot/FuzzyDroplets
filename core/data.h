@@ -44,6 +44,7 @@ public:
 
     size_t pointCount() const {return m_points.size();}
     const Point & point(size_t i) const {assert(i < m_points.size()); return m_points[i];}
+    std::pair<unsigned char, unsigned char> precision(size_t i) const {assert(i < m_precision.size()); return m_precision[i];}
     const std::vector<Point> & points() const {return  m_points;}
     const OrthogonalRectangle & bounds() const {return m_dataBounds;}
 
@@ -126,6 +127,7 @@ private:
     Design m_design;
     ColorScheme * m_colorScheme {nullptr};
     std::vector<Point> m_points;
+    std::vector<std::pair<unsigned char, unsigned char>> m_precision;
     std::vector<FuzzyColor> m_colors;
     std::vector<Color::Rgba> m_rgba;
     std::vector<bool> m_selected;
