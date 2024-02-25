@@ -48,7 +48,7 @@ public:
     const QPen & pen() const {return m_pen;}
     const QBrush & brush() const {return m_brush;}
 
-    void render(QPainter & painter)
+    void render(QPainter & painter, bool highQualityOutput = false)
     {
         if (this->isVisible()) {
             apply(painter, pen(), brush(), QPalette::Text, QPalette::Text);

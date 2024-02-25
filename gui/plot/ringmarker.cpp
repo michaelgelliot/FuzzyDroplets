@@ -13,7 +13,7 @@ RingMarker::RingMarker(ContinuousAxis * xAxis, ContinuousAxis * yAxis, double x,
 {
 }
 
-void RingMarker::render(QPainter & painter)
+void RingMarker::render(QPainter & painter, bool highQualityOutput)
 {
     if (this->isVisible()) {
         painter.save();

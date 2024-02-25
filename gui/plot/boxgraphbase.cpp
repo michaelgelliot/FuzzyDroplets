@@ -105,7 +105,7 @@ void BoxGraphBase::removeDynamicPrimitive(Primitive * primitive)
 QRectF BoxGraphBase::viewportRect() const
 {
     return QRectF(QPointF(m_padding + (m_leftAxis ? m_leftAxis->leftOffset() : 0), m_padding + (m_topAxis ? m_topAxis->rightOffset() : 0)),
-                  QPointF(width() - m_padding - (m_rightAxis ? m_rightAxis->rightOffset() : 0), height() - m_padding - (m_bottomAxis ? m_bottomAxis->leftOffset() : 0)));
+                  QPointF(width() - m_padding - (m_rightAxis ? m_rightAxis->rightOffset() : 0),  height() - m_padding - (m_bottomAxis ? m_bottomAxis->leftOffset() : 0)));
 }
 
 void BoxGraphBase::resizeEvent(QResizeEvent * e)
@@ -158,13 +158,13 @@ void BoxGraphBase::updateStaticPrimitives(const QRectF & clipRect)
     }
 }
 
-void BoxGraphBase::render(QPainter & paint)
+void BoxGraphBase::render(QPainter & paint, bool highQualityOutput)
 {
     paint.save();
 
-    if (paint.paintEngine()->type() == QPaintEngine::SVG) {
+    if (highQualityOutput) {
 
-        paint.setClipRect(QRect(0,0,(int)m_staticPixmap.width(), (int)m_staticPixmap.height()));
+        paint.setClipRect(QRect(0, 0, m_staticPixmap.width(), m_staticPixmap.height()));
 
         paint.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
 
@@ -187,7 +187,7 @@ void BoxGraphBase::render(QPainter & paint)
                     paint.setClipRegion(oldClip);
                 }
                 paint.translate(viewport.topLeft());
-                m_staticPrimitives[i]->render(paint);
+                m_staticPrimitives[i]->render(paint, highQualityOutput);
                 paint.translate(-viewport.topLeft());
             }
         }
@@ -212,14 +212,14 @@ void BoxGraphBase::render(QPainter & paint)
                 paint.setClipRegion(oldClip);
             }
             paint.translate(viewport.topLeft());
-            m_dynamicPrimitives[i]->render(paint);
+            m_dynamicPrimitives[i]->render(paint, highQualityOutput);
             paint.translate(-viewport.topLeft());
         }
     }
 
     paint.setClipRegion(oldClip);
 
-    if (paint.paintEngine()->type() == QPaintEngine::SVG) {
+    if (highQualityOutput) {
         // Qt SVG does not support clipping so before drawing axes we blank out everything outside the graph viewport
         QRegion region = QRegion(rect()).subtracted(viewportRect().toRect());
         paint.setBrush(palette().base());
@@ -231,22 +231,22 @@ void BoxGraphBase::render(QPainter & paint)
 
     if (m_leftAxis) {
         paint.translate(viewport.bottomLeft());
-        m_leftAxis->render(paint);
+        m_leftAxis->render(paint, highQualityOutput);
         paint.translate(-viewport.bottomLeft());
     }
     if (m_bottomAxis) {
         paint.translate(viewport.bottomLeft());
-        m_bottomAxis->render(paint);
+        m_bottomAxis->render(paint, highQualityOutput);
         paint.translate(-viewport.bottomLeft());
     }
     if (m_topAxis) {
         paint.translate(viewport.topLeft());
-        m_topAxis->render(paint);
+        m_topAxis->render(paint, highQualityOutput);
         paint.translate(-viewport.topLeft());
     }
     if (m_rightAxis) {
         paint.translate(viewport.bottomRight());
-        m_rightAxis->render(paint);
+        m_rightAxis->render(paint, highQualityOutput);
         paint.translate(-viewport.bottomRight());
     }
 
@@ -338,7 +338,7 @@ void BoxGraphBase::exportSvg(const std::string & path)
     QPainter paint;
     paint.begin(&generator);
     paint.setRenderHint(QPainter::Antialiasing);
-    render(paint);
+    render(paint, true);
     paint.end();
 
     for (auto & font : fonts) {
@@ -363,6 +363,17 @@ void BoxGraphBase::exportSvg(const std::string & path)
     m_bottomAxis->setMinorTickLabelFont(fonts[15]);
 
     recalculateLayout();
+}
+
+QImage BoxGraphBase::image(double scale)
+{
+    QImage image(scale * width(), scale * height(), QImage::Format_ARGB32);
+    QPainter painter(&image);
+    painter.scale(scale, scale);
+    painter.setClipRect(rect());
+    render(painter, true);
+    painter.end();
+    return image;
 }
 
 } // namespace Plot

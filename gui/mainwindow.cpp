@@ -2,9 +2,6 @@
 #include "core/colorscheme.h"
 #include "core/data.h"
 #include "gui/generic/themedicon.h"
-#include "qdialogbuttonbox.h"
-#include "qevent.h"
-#include "qpainter.h"
 #include "samplelistwidget.h"
 #include "dropletgraphwidget.h"
 #include "clusteringwidget.h"
@@ -34,6 +31,8 @@
 #include <QPushButton>
 #include <QActionGroup>
 #include <QStyleHints>
+#include <QDialogButtonBox>
+#include <QEvent>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
@@ -93,6 +92,10 @@ MainWindow::MainWindow(QWidget *parent)
     m_jpgSquareAction = m_jpgMenu->addAction(themedIcon(":/square"),"Square Markers...", this, &MainWindow::exportJPGSquare);
     m_jpgRoundAction = m_jpgMenu->addAction(themedIcon(":/circle"), "Round Markers...", this, &MainWindow::exportJPGRound);
     m_jpgMenu->setEnabled(false);
+    m_tiffMenu = fileMenu->addMenu("Export TIFF");
+    m_tiffSquareAction = m_tiffMenu->addAction(themedIcon(":/square"),"Square Markers...", this, &MainWindow::exportTIFFSquare);
+    m_tiffRoundAction = m_tiffMenu->addAction(themedIcon(":/circle"), "Round Markers...", this, &MainWindow::exportTIFFRound);
+    m_tiffMenu->setEnabled(false);
     fileMenu->addSeparator();
     m_exportReportAction = fileMenu->addAction(themedIcon(":/exportReport"), "Export Assignment Report...", this, &MainWindow::exportReport);
     m_exportReportAction->setEnabled(false);
@@ -421,7 +424,7 @@ void MainWindow::addDataFiles()
         }
         auto samplePaths = m_data->samplePaths();
         QStringList skippedFiles;
-        for (int i = paths.size()-1; i >= 0; --i) {
+        for (int i = (int)paths.size()-1; i >= 0; --i) {
             if (std::find(samplePaths.begin(), samplePaths.end(), paths[i]) != samplePaths.end()) {
                 skippedFiles.append(QString::fromStdString(paths[i]));
                 paths.erase(paths.begin() + i);
@@ -448,6 +451,7 @@ void MainWindow::addDataFiles()
     m_saveAction->setEnabled(m_data->pointCount() > 0);
     m_svgMenu->setEnabled(m_data->pointCount() > 0);
     m_jpgMenu->setEnabled(m_data->pointCount() > 0);
+    m_tiffMenu->setEnabled(m_data->pointCount() > 0);
 }
 
 void MainWindow::addFolder()
@@ -465,7 +469,7 @@ void MainWindow::addFolder()
             }
             auto samplePaths = m_data->samplePaths();
             QStringList skippedFiles;
-            for (int i = paths.size()-1; i >= 0; --i) {
+            for (int i = (int)paths.size()-1; i >= 0; --i) {
                 if (std::find(samplePaths.begin(), samplePaths.end(), paths[i]) != samplePaths.end()) {
                     skippedFiles.append(QString::fromStdString(paths[i]));
                     paths.erase(paths.begin() + i);
@@ -494,6 +498,7 @@ void MainWindow::addFolder()
     m_saveAction->setEnabled(m_data->pointCount() > 0);
     m_svgMenu->setEnabled(m_data->pointCount() > 0);
     m_jpgMenu->setEnabled(m_data->pointCount() > 0);
+    m_tiffMenu->setEnabled(m_data->pointCount() > 0);
 }
 
 void MainWindow::processFileLoadErrorMessage(const std::string & error)
@@ -614,6 +619,18 @@ void MainWindow::exportJPGRound()
     exportJPG();
 }
 
+void MainWindow::exportTIFFSquare()
+{
+    m_graphWidget->pointCloud()->setRoundSvgMarkers(false);
+    exportTIFF();
+}
+
+void MainWindow::exportTIFFRound()
+{
+    m_graphWidget->pointCloud()->setRoundSvgMarkers(true);
+    exportTIFF();
+}
+
 void MainWindow::exportSVG()
 {
     QSettings settings;
@@ -632,14 +649,24 @@ void MainWindow::exportJPG()
     if (!output.isEmpty()) {
         QFileInfo fi(output);
         settings.setValue("exportDir", fi.absolutePath());
-        QTemporaryFile file;
-        file.open();
-        file.close();
-        m_graphWidget->exportSvg(file.fileName().toStdString());
-        QSvgRenderer renderer(file.fileName());
-        QImage img(m_graphWidget->bufferSize() * 10, QImage::Format_ARGB32);
-        QPainter painter(&img);
-        renderer.render(&painter);
+        auto img = m_graphWidget->image(10);
+        QImageWriter writer(output);
+        writer.setQuality(100);
+        writer.write(img);
+    }
+}
+
+void MainWindow::exportTIFF()
+{
+    QSettings settings;
+    auto output = QFileDialog::getSaveFileName(this, "", settings.value("exportDir", QDir::homePath()).toString(), "TIFF Files (*.tiff)");
+    if (!output.isEmpty()) {
+        QFileInfo fi(output);
+        settings.setValue("exportDir", fi.absolutePath());
+        auto img = m_graphWidget->image(10);
+        int dpm = 300 / 0.0254; // ~300 DPI
+        img.setDotsPerMeterX(dpm);
+        img.setDotsPerMeterY(dpm);
         QImageWriter writer(output);
         writer.setQuality(100);
         writer.write(img);
@@ -661,7 +688,7 @@ void MainWindow::exportReport()
         file.open(QFile::WriteOnly | QFile::Truncate);
         QTextStream ts(&file);
         ts << "File,Type,Unassigned Droplets,";
-        for (size_t i = 0; i < m_data->design()->clusterCount(); ++i) {
+        for (int i = 0; i < m_data->design()->clusterCount(); ++i) {
             ts << QString::fromStdString(m_data->design()->clusterLabel(i)) << ",";
         }
         ts << "Total" << Qt::endl;

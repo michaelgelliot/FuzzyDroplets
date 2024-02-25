@@ -57,7 +57,7 @@ double Axis::offset(Alignment a) const
     return labelSize + tickSize + tickLabelSpace;
 }
 
-void Axis::render(QPainter & paint)
+void Axis::render(QPainter & paint, bool highQualityOutput)
 {
     paint.save();
 
@@ -74,8 +74,7 @@ void Axis::render(QPainter & paint)
             textRect = {0, (alignment(Label) == AlignLeft ? leftOffset() : rightOffset()) - m_labelBoundingRect.height(), m_pixelLength, m_labelBoundingRect.height()};
         else
             textRect = {0, -(alignment(Label) == AlignLeft ? leftOffset() : rightOffset()), m_pixelLength, m_labelBoundingRect.height()};
-        auto paintType = paint.paintEngine()->type();
-        if (m_orientation == Qt::Horizontal || paintType == QPaintEngine::SVG || paintType == QPaintEngine::Pdf) {
+        if (m_orientation == Qt::Horizontal || highQualityOutput) {
             if (m_orientation == Qt::Vertical)
                 paint.rotate(-90);
             paint.drawText(textRect, Qt::AlignCenter, m_label);

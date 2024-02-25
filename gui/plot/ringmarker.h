@@ -26,7 +26,7 @@ public:
     void setPen(const QPen & pen) {m_pen = pen;}
     const QPen & pen() const {return m_pen;}
 
-    virtual void render(QPainter & painter);
+    virtual void render(QPainter & painter, bool highQualityOutput = false);
 
 private:
 

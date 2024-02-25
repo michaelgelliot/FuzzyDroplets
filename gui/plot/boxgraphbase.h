@@ -39,7 +39,7 @@ public:
     void removeDynamicPrimitive(Primitive * primitive);
     QList<Primitive*> & dynamicPrimitives() {return m_dynamicPrimitives;}
 
-    virtual void render(QPainter & paint) override;
+    virtual void render(QPainter & paint, bool highQualityOutput = false) override;
     virtual void updateStaticPrimitives(const QRectF & clipRect = QRectF());
 
     void exportSvg(const std::string & path);
@@ -54,6 +54,8 @@ public:
     Axis * rightAxis() {return m_rightAxis;}
     Axis * topAxis() {return m_topAxis;}
     Axis * bottomAxis() {return m_bottomAxis;}
+
+    QImage image(double scale);
 
 protected:
 

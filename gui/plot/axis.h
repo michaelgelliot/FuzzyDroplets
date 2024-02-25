@@ -38,7 +38,7 @@ public:
     Axis();
     virtual ~Axis() {}
 
-    virtual void render(QPainter & painter);
+    virtual void render(QPainter & painter, bool highQualityOutput = false);
 
     const QPen & pen(Component component) const {return m_pens[index(component)];}
     void setPen(Components components, const QPen & pen) {setProperty(m_pens, components, pen);}

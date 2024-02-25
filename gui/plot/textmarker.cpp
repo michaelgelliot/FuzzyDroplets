@@ -16,7 +16,7 @@ TextMarker::TextMarker(ContinuousAxis * xAxis, ContinuousAxis * yAxis, double x,
 {
 }
 
-void TextMarker::render(QPainter & painter)
+void TextMarker::render(QPainter & painter, bool highQualityOutput)
 {
     if (this->isVisible() && !m_text.isEmpty()) {
 

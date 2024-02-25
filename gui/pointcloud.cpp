@@ -19,7 +19,7 @@ PointCloud::PointCloud(Data * data, Plot::ContinuousAxis * xAxis, Plot::Continuo
 {
 }
 
-void PointCloud::render(QPainter & painter)
+void PointCloud::render(QPainter & painter, bool highQualityOutput)
 {
     double dpr = painter.device()->devicePixelRatio();
     viewWidth = m_xAxis->pixelLength() * dpr + 1;
@@ -44,7 +44,7 @@ void PointCloud::render(QPainter & painter)
 
     const double limit = std::max(1.0/m_data->colorComponentCount(), 0.999);
 
-    if (painter.paintEngine()->type() == QPaintEngine::SVG) {
+    if (highQualityOutput) {
 
         double dS = 1.3 * (m_baseSize * (1.0 + m_scaleFactor * (m_xAxis->absoluteValueLength() / m_xAxis->valueLength() - 1.0)));
         double dS2 = 1.3 * (dS/2);

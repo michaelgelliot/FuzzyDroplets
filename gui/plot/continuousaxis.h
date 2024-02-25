@@ -59,7 +59,7 @@ public:
     double value(double pixel) const {return ((m_inverted && orientation() == Qt::Horizontal) || (!m_inverted && orientation() == Qt::Vertical)) ? m_max - (pixel / pixelLength()) * (m_max - m_min) : (pixel / pixelLength()) * (m_max - m_min) + m_min;}
     double pixel(double value) const {return ((m_inverted && orientation() == Qt::Horizontal) || (!m_inverted && orientation() == Qt::Vertical)) ? ((pixelLength() * (m_max - value))/(m_max - m_min)) : -((pixelLength() * (m_min - value))/(m_max - m_min));}
 
-    virtual void render(QPainter & painter) override;
+    virtual void render(QPainter & painter, bool highQualityOutput = false) override;
 
 protected:
 

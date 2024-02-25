@@ -33,7 +33,7 @@ public:
     void setBrush(const QBrush & brush) {m_brush = brush;}
     const QBrush & brush() const {return m_brush;}
 
-    virtual void render(QPainter & painter);
+    virtual void render(QPainter & painter, bool highQualityOutput = false);
 
 private:
 

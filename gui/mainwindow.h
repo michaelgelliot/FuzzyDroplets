@@ -44,6 +44,8 @@ public slots:
     void exportSVGRound();
     void exportJPGSquare();
     void exportJPGRound();
+    void exportTIFFSquare();
+    void exportTIFFRound();
     void guiColorSchemeChanged();
     void exportReport();
 
@@ -68,6 +70,7 @@ private:
     void setAxisComponentVisibility(QString name, Plot::Axis * axis, Plot::Axis::Component component, bool visible);
     void exportSVG();
     void exportJPG();
+    void exportTIFF();
 
     Data * m_data;
     CommandStack * m_commandStack {nullptr};
@@ -94,11 +97,14 @@ private:
     QAction * m_svgRoundAction;
     QAction * m_jpgSquareAction;
     QAction * m_jpgRoundAction;
+    QAction * m_tiffSquareAction;
+    QAction * m_tiffRoundAction;
     QAction * m_zoomInAction;
     QAction * m_zoomOutAction;
     QAction * m_zoomResetAction;
     QMenu * m_svgMenu;
     QMenu * m_jpgMenu;
+    QMenu * m_tiffMenu;
     QMenu * m_topAxisMenu;
     QMenu * m_bottomAxisMenu;
     QMenu * m_leftAxisMenu;

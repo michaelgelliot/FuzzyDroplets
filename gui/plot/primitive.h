@@ -26,7 +26,7 @@ public:
     bool antialiased() const {return m_antialiased;}
     void setAntialiased(bool antialiased) {m_antialiased = antialiased;}
 
-    virtual void render(QPainter & painter) = 0;
+    virtual void render(QPainter & painter, bool highQualityOutput = false) = 0;
 
 protected:
 

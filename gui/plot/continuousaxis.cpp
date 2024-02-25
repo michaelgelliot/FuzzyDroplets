@@ -103,7 +103,7 @@ QPointF ContinuousAxis::tickStep(Axis::Component tickType, double tickLength)
     return (orientation() == Qt::Vertical) ? QPointF((isVisible(tickType) ? tickLength : 0), 0) : QPointF(0, -(isVisible(tickType) ? tickLength : 0));
 }
 
-void ContinuousAxis::render(QPainter & paint)
+void ContinuousAxis::render(QPainter & paint, bool highQualityOutput)
 {
     paint.save();
 
@@ -191,7 +191,7 @@ void ContinuousAxis::render(QPainter & paint)
 
     paint.restore();
 
-    Axis::render(paint);
+    Axis::render(paint, highQualityOutput);
 }
 
 void ContinuousAxis::setupFromDataRange(double low, double high)

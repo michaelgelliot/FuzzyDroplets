@@ -11,7 +11,7 @@ Polygon::Polygon(ContinuousAxis * xAxis, ContinuousAxis * yAxis)
 {
 }
 
-void Polygon::render(QPainter & painter)
+void Polygon::render(QPainter & painter, bool highQualityOutput)
 {
     if (!isVisible()) return;
     painter.save();

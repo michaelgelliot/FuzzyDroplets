@@ -16,7 +16,7 @@ public:
     void setPen(const QPen & pen) {m_pen = pen;}
     void setBrush(const QBrush & brush) {m_brush = brush;}
 
-    void render(QPainter & painter);
+    void render(QPainter & painter, bool highQualityOutput);
 
 private:
 

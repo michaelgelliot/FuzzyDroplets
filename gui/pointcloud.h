@@ -13,7 +13,7 @@ public:
 
     PointCloud(Data * data, Plot::ContinuousAxis * xAxis, Plot::ContinuousAxis * yAxis);
 
-    void render(QPainter & painter);
+    void render(QPainter & painter, bool highQualityOutput = false);
 
     void setScaleFactor(double scaleFactor) {m_scaleFactor = std::clamp(scaleFactor, 0.0, 1.0);}
     double scaleFactor() const {return m_scaleFactor;}
