@@ -57,14 +57,21 @@ struct CentroidsFromDesign
                     }
                 }
             }
-            auto zip = std::ranges::views::zip(std::ranges::views::iota(0), count);
             std::vector<std::tuple<int,  double>> toSort;
-            std::ranges::copy(zip, std::back_inserter(toSort));
+#ifdef Q_OS_LINUX
+            toSort.reserve(count.size());
+            for (int i = 0; i < count.size(); ++i) {
+                toSort.push_back({i, count[i]});
+            }
+#else
+            std::ranges::copy(std::ranges::views::zip(std::ranges::views::iota(0), count), std::back_inserter(toSort));
+#endif
             std::ranges::sort(toSort, [&](const auto & left, const auto & right){return std::get<1>(left) > std::get<1>(right);});
             std::transform(toSort.begin(), toSort.end(), result.begin(), [&](const auto & elem){return data->design()->clusterCentroid(std::get<0>(elem));});
             result.resize(k);
+
         } else if (result.size() < k) {
-#ifdef Q_OS_MACOS
+#ifndef Q_OS_WIN
             auto gen = RandomMedoids::generate(data, k - (int)result.size());
             result.reserve(result.size() + gen.size());
             for (auto & g : gen) result.push_back(g);
@@ -88,7 +95,16 @@ struct CentroidsFromCurrentColors
                 }
             }
         }
+#ifdef Q_OS_LINUX
+        std::vector<std::tuple<size_t, WeightedArithmeticMean<Point>>> zip;
+        for (size_t i = 0; i < means.size(); ++i) {
+            if (means[i].count() > 0) {
+                zip.push_back({i+1, means[i]});
+            }
+        }
+#else
         auto zip = std::ranges::views::zip(std::ranges::views::iota(1), means) | std::ranges::views::filter([](const auto & elem){return std::get<1>(elem).count() > 0;});
+#endif
         std::vector<std::tuple<int,  WeightedArithmeticMean<Point>>> toSort;
         std::ranges::copy(zip, std::back_inserter(toSort));
         std::ranges::sort(toSort, [&](const auto & left, const auto & right){return std::get<1>(left).count() > std::get<1>(right).count();});
@@ -97,7 +113,7 @@ struct CentroidsFromCurrentColors
         if (result.size() > k) {
             result.resize(k);
         } else if (result.size() < k) {
-#ifdef Q_OS_MACOS
+#ifndef Q_OS_WIN
             auto gen = RandomMedoids::generate(data, k - (int)result.size());
             result.reserve(result.size() + gen.size());
             for (auto & g : gen) result.push_back(g);
@@ -123,7 +139,16 @@ struct KMeansPP
         std::vector<double> distances(filtered.size());
         auto metric = DistanceMetric<Euclidean>();
         for (size_t i = 1; i < k; ++i) {
+#ifdef Q_OS_LINUX
+            std::vector<std::tuple<Point, double>> zip;
+            zip.reserve(filtered.size());
+            for (size_t i = 0; i < filtered.size(); ++i) {
+                zip.push_back({filtered[i], distances[i]});
+            }
+#else
             auto zip = std::views::zip(filtered, distances);
+#endif
+
             double total = 0;
             std::ranges::for_each(zip, [&](auto elem) {
                 auto it = std::min_element(result.begin(), result.begin() + i, [&](const auto & left, const auto & right) {return metric(left, std::get<0>(elem)) < metric(right, std::get<0>(elem));});

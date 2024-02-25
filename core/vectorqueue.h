@@ -69,7 +69,9 @@ public:
     // {
     // }
 
+#ifdef Q_OS_WIN
     constexpr auto operator<=>(const VectorQueue&) const = default;
+#endif
 
     constexpr VectorQueue& operator=(std::initializer_list<T> ilist)
     {
