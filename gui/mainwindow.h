@@ -61,6 +61,7 @@ private slots:
     void designChanged();
     void selectedSamplesChanged();
     void citation();
+    void openTutorial();
 
 private:
 

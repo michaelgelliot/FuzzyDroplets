@@ -32,6 +32,7 @@
 #include <QStyleHints>
 #include <QDialogButtonBox>
 #include <QEvent>
+#include <QDesktopServices>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
@@ -167,6 +168,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     auto helpMenu = menuBar()->addMenu("Help");
     helpMenu->addAction("How to Cite...", this, &MainWindow::citation);
+    helpMenu->addSeparator();
+    helpMenu->addAction("Tutorial...", this, &MainWindow::openTutorial);
 
     m_leftAxisMenu = viewMenu->addMenu(themedIcon(":/borderLeft"), "Left Axis");
     auto leftAxisLabel = m_leftAxisMenu->addAction("Label"); leftAxisLabel->setCheckable(true); leftAxisLabel->setData(Plot::Axis::Label);
@@ -715,4 +718,9 @@ void MainWindow::citation()
     layout->addWidget(buttonBox);
     d.setLayout(layout);
     d.exec();
+}
+
+void MainWindow::openTutorial()
+{
+    QDesktopServices::openUrl(QUrl("https://github.com/michaelgelliot/FuzzyDroplets"));
 }
