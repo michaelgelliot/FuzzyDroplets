@@ -671,7 +671,7 @@ void MainWindow::exportTIFF()
         layout->addRow("Quality", qualitySlider);
         QComboBox * compression = new QComboBox;
         compression->addItem("None", 0);
-        compression->addItem("LZW", 1);
+        compression->addItem("LZW (lossless)", 1);
         compression->setCurrentIndex(settings.value("tiffCompression", 1).toInt());
         layout->addRow("Compression", compression);
         QSpinBox * dpiEdit = new QSpinBox;
