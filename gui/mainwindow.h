@@ -40,10 +40,7 @@ public slots:
     void addDataFiles();
     void addFolder();
     bool exportAll();
-    void exportJPGSquare();
-    void exportJPGRound();
-    void exportTIFFSquare();
-    void exportTIFFRound();
+    void exportJPG();
     void guiColorSchemeChanged();
     void exportReport();
 
@@ -67,7 +64,6 @@ private:
 
     void processFileLoadErrorMessage(const std::string & error);
     void setAxisComponentVisibility(QString name, Plot::Axis * axis, Plot::Axis::Component component, bool visible);
-    void exportJPG();
     void exportTIFF();
 
     Data * m_data;
@@ -91,15 +87,10 @@ private:
     QAction * m_undoAction;
     QAction * m_redoAction;
     QAction * m_convexHullAction;
-    QAction * m_jpgSquareAction;
-    QAction * m_jpgRoundAction;
-    QAction * m_tiffSquareAction;
-    QAction * m_tiffRoundAction;
     QAction * m_zoomInAction;
     QAction * m_zoomOutAction;
     QAction * m_zoomResetAction;
-    QMenu * m_jpgMenu;
-    QMenu * m_tiffMenu;
+    QMenu * m_exportImageMenu;
     QMenu * m_topAxisMenu;
     QMenu * m_bottomAxisMenu;
     QMenu * m_leftAxisMenu;

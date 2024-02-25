@@ -2,6 +2,10 @@
 #include "core/colorscheme.h"
 #include "core/data.h"
 #include "gui/generic/themedicon.h"
+#include "qcheckbox.h"
+#include "qcombobox.h"
+#include "qformlayout.h"
+#include "qspinbox.h"
 #include "samplelistwidget.h"
 #include "dropletgraphwidget.h"
 #include "clusteringwidget.h"
@@ -84,14 +88,10 @@ MainWindow::MainWindow(QWidget *parent)
     m_saveAction = fileMenu->addAction(themedIcon(":/save"), "Save As...", this, &MainWindow::exportAll);
     m_saveAction->setEnabled(false);
     fileMenu->addSeparator();
-    m_jpgMenu = fileMenu->addMenu("Export JPEG");
-    m_jpgSquareAction = m_jpgMenu->addAction(themedIcon(":/square"),"Square Markers...", this, &MainWindow::exportJPGSquare);
-    m_jpgRoundAction = m_jpgMenu->addAction(themedIcon(":/circle"), "Round Markers...", this, &MainWindow::exportJPGRound);
-    m_jpgMenu->setEnabled(false);
-    m_tiffMenu = fileMenu->addMenu("Export TIFF");
-    m_tiffSquareAction = m_tiffMenu->addAction(themedIcon(":/square"),"Square Markers...", this, &MainWindow::exportTIFFSquare);
-    m_tiffRoundAction = m_tiffMenu->addAction(themedIcon(":/circle"), "Round Markers...", this, &MainWindow::exportTIFFRound);
-    m_tiffMenu->setEnabled(false);
+    m_exportImageMenu = fileMenu->addMenu(themedIcon(":/image"), "Export Image");
+    m_exportImageMenu->addAction("Export JPEG...", this, &MainWindow::exportJPG);
+    m_exportImageMenu->addAction("Export TIFF...", this, &MainWindow::exportTIFF);
+    m_exportImageMenu->setEnabled(false);
     fileMenu->addSeparator();
     m_exportReportAction = fileMenu->addAction(themedIcon(":/exportReport"), "Export Assignment Report...", this, &MainWindow::exportReport);
     m_exportReportAction->setEnabled(false);
@@ -333,10 +333,9 @@ void MainWindow::guiColorSchemeChanged()
     m_bottomAxisMenu->setIcon(themedIcon(":/borderBottom"));
     m_leftAxisMenu->setIcon(themedIcon(":/borderLeft"));
     m_rightAxisMenu->setIcon(themedIcon(":/borderRight"));
-    m_jpgSquareAction->setIcon(themedIcon(":/square"));
-    m_jpgRoundAction->setIcon(themedIcon(":/circle"));
     m_zoomInAction->setIcon(themedIcon(":/zoomIn"));
     m_zoomOutAction->setIcon(themedIcon(":/zoomOut"));
+    m_exportImageMenu->setIcon(themedIcon(":/image"));
     if (qGuiApp->styleHints()->colorScheme() == Qt::ColorScheme::Dark)
         m_data->colorScheme()->setColor(0, QColor(Qt::white).rgb());
     else
@@ -445,8 +444,7 @@ void MainWindow::addDataFiles()
     m_convexHullAction->setEnabled(m_data->pointCount() > 0);
     m_selectionMenu->setEnabled(m_data->pointCount() > 0);
     m_saveAction->setEnabled(m_data->pointCount() > 0);
-    m_jpgMenu->setEnabled(m_data->pointCount() > 0);
-    m_tiffMenu->setEnabled(m_data->pointCount() > 0);
+    m_exportImageMenu->setEnabled(m_data->pointCount() > 0);
 }
 
 void MainWindow::addFolder()
@@ -491,8 +489,7 @@ void MainWindow::addFolder()
     m_convexHullAction->setEnabled(m_data->pointCount() > 0);
     m_selectionMenu->setEnabled(m_data->pointCount() > 0);
     m_saveAction->setEnabled(m_data->pointCount() > 0);
-    m_jpgMenu->setEnabled(m_data->pointCount() > 0);
-    m_tiffMenu->setEnabled(m_data->pointCount() > 0);
+    m_exportImageMenu->setEnabled(m_data->pointCount() > 0);
 }
 
 void MainWindow::processFileLoadErrorMessage(const std::string & error)
@@ -589,41 +586,62 @@ bool MainWindow::exportAll()
     return false;
 }
 
-void MainWindow::exportJPGSquare()
-{
-    m_graphWidget->pointCloud()->setRoundSvgMarkers(false);
-    exportJPG();
-}
-
-void MainWindow::exportJPGRound()
-{
-    m_graphWidget->pointCloud()->setRoundSvgMarkers(true);
-    exportJPG();
-}
-
-void MainWindow::exportTIFFSquare()
-{
-    m_graphWidget->pointCloud()->setRoundSvgMarkers(false);
-    exportTIFF();
-}
-
-void MainWindow::exportTIFFRound()
-{
-    m_graphWidget->pointCloud()->setRoundSvgMarkers(true);
-    exportTIFF();
-}
-
 void MainWindow::exportJPG()
 {
     QSettings settings;
     auto output = QFileDialog::getSaveFileName(this, "", settings.value("exportDir", QDir::homePath()).toString(), "JPEG Files (*.jpg *.jpeg)");
     if (!output.isEmpty()) {
-        QFileInfo fi(output);
-        settings.setValue("exportDir", fi.absolutePath());
-        auto img = m_graphWidget->image(10);
-        QImageWriter writer(output);
-        writer.setQuality(100);
-        writer.write(img);
+
+        QDialog d;
+        QVBoxLayout * mainLayout = new QVBoxLayout;
+        d.setLayout(mainLayout);
+
+        QFormLayout * layout = new QFormLayout;
+        QComboBox * markers = new QComboBox;
+        markers->addItem(themedIcon(":/square"), "Square", 0);
+        markers->addItem(themedIcon(":/circle"), "Circle", 1);
+        markers->setCurrentIndex(settings.value("jpegMarkerShape", 1).toInt());
+        layout->addRow("Marker Shape", markers);
+        QSlider * scaleSlider = new QSlider(Qt::Horizontal);
+        scaleSlider->setRange(1, 10);
+        scaleSlider->setValue(settings.value("jpegScale", 4).toInt());
+        layout->addRow("Scale", scaleSlider);
+        QSlider * qualitySlider = new QSlider(Qt::Horizontal);
+        qualitySlider->setRange(0, 100);
+        qualitySlider->setValue(settings.value("jpegQuality", 100).toInt());
+        layout->addRow("Quality", qualitySlider);
+        QCheckBox * optimizeCheckBox = new QCheckBox;
+        optimizeCheckBox->setChecked(settings.value("jpegOptimized", true).toBool());
+        QCheckBox * progressiveCheckBox = new QCheckBox;
+        progressiveCheckBox->setChecked(settings.value("jpegProgressive", true).toBool());
+        layout->addRow("Optimized", optimizeCheckBox);
+        layout->addRow("Progressive Scan", progressiveCheckBox);
+
+        mainLayout->addLayout(layout);
+        auto buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok);
+        mainLayout->addWidget(buttonBox);
+        connect(buttonBox, &QDialogButtonBox::accepted, &d, &QDialog::accept);
+
+        if (d.exec() == QDialog::Accepted) {
+            settings.setValue("jpegMarkerShape", markers->currentIndex());
+            settings.setValue("jpegScale", scaleSlider->value());
+            settings.setValue("jpegQuality", qualitySlider->value());
+            settings.setValue("jpegOptimized", optimizeCheckBox->isChecked());
+            settings.setValue("jpegProgressive", progressiveCheckBox->isChecked());
+            if (markers->currentIndex() == 0) {
+                m_graphWidget->pointCloud()->setRoundSvgMarkers(false);
+            } else {
+                m_graphWidget->pointCloud()->setRoundSvgMarkers(true);
+            }
+            QFileInfo fi(output);
+            settings.setValue("exportDir", fi.absolutePath());
+            auto img = m_graphWidget->image(scaleSlider->value());
+            QImageWriter writer(output);
+            writer.setQuality(qualitySlider->value());
+            writer.setOptimizedWrite(optimizeCheckBox->isChecked());
+            writer.setProgressiveScanWrite(progressiveCheckBox->isChecked());
+            writer.write(img);
+        }
     }
 }
 
@@ -632,15 +650,62 @@ void MainWindow::exportTIFF()
     QSettings settings;
     auto output = QFileDialog::getSaveFileName(this, "", settings.value("exportDir", QDir::homePath()).toString(), "TIFF Files (*.tiff)");
     if (!output.isEmpty()) {
-        QFileInfo fi(output);
-        settings.setValue("exportDir", fi.absolutePath());
-        auto img = m_graphWidget->image(10);
-        int dpm = 350 / 0.0254; // ~350 DPI
-        img.setDotsPerMeterX(dpm);
-        img.setDotsPerMeterY(dpm);
-        QImageWriter writer(output);
-        writer.setQuality(100);
-        writer.write(img);
+
+        QDialog d;
+        QVBoxLayout * mainLayout = new QVBoxLayout;
+        d.setLayout(mainLayout);
+
+        QFormLayout * layout = new QFormLayout;
+        QComboBox * markers = new QComboBox;
+        markers->addItem(themedIcon(":/square"), "Square", 0);
+        markers->addItem(themedIcon(":/circle"), "Circle", 1);
+        markers->setCurrentIndex(settings.value("tiffMarkerShape", 1).toInt());
+        layout->addRow("Marker Shape", markers);
+        QSlider * scaleSlider = new QSlider(Qt::Horizontal);
+        scaleSlider->setRange(1, 10);
+        scaleSlider->setValue(settings.value("tiffScale", 4).toInt());
+        layout->addRow("Scale", scaleSlider);
+        QSlider * qualitySlider = new QSlider(Qt::Horizontal);
+        qualitySlider->setRange(0, 100);
+        qualitySlider->setValue(settings.value("tiffQuality", 100).toInt());
+        layout->addRow("Quality", qualitySlider);
+        QComboBox * compression = new QComboBox;
+        compression->addItem("None", 0);
+        compression->addItem("LZW", 1);
+        compression->setCurrentIndex(settings.value("tiffCompression", 1).toInt());
+        layout->addRow("Compression", compression);
+        QSpinBox * dpiEdit = new QSpinBox;
+        dpiEdit->setRange(72, 600);
+        dpiEdit->setValue(settings.value("tiffDpi", 300).toInt());
+        layout->addRow("Dots per Inch", dpiEdit);
+
+        mainLayout->addLayout(layout);
+        auto buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok);
+        mainLayout->addWidget(buttonBox);
+        connect(buttonBox, &QDialogButtonBox::accepted, &d, &QDialog::accept);
+
+        if (d.exec() == QDialog::Accepted) {
+            settings.setValue("tiffMarkerShape", markers->currentIndex());
+            settings.setValue("tiffScale", scaleSlider->value());
+            settings.setValue("tiffQuality", qualitySlider->value());
+            settings.setValue("tiffDpi", dpiEdit->value());
+            settings.setValue("tiffCompression", compression->currentIndex());
+            if (markers->currentIndex() == 0) {
+                m_graphWidget->pointCloud()->setRoundSvgMarkers(false);
+            } else {
+                m_graphWidget->pointCloud()->setRoundSvgMarkers(true);
+            }
+            QFileInfo fi(output);
+            settings.setValue("exportDir", fi.absolutePath());
+            auto img = m_graphWidget->image(scaleSlider->value());
+            int dpm = dpiEdit->value() / 0.0254; // dots per metre
+            img.setDotsPerMeterX(dpm);
+            img.setDotsPerMeterY(dpm);
+            QImageWriter writer(output);
+            writer.setCompression(compression->currentIndex());
+            writer.setQuality(qualitySlider->value());
+            writer.write(img);
+        }
     }
 }
 
