@@ -33,6 +33,8 @@
 #include <unistd.h>
 #endif
 
+#include <QtGlobal>
+
 namespace PhyloGenerics
 {
 
@@ -80,7 +82,11 @@ public:
             return;
 #else
     // open file
-        m_file = ::open(filename.c_str(), O_RDONLY /*| O_LARGEFILE*/); // Q_OS_MACOS
+#ifdef Q_OS_MACOS
+        m_file = ::open(filename.c_str(), O_RDONLY);
+#else
+        m_file = ::open(filename.c_str(), O_RDONLY | O_LARGEFILE);
+#endif
         if (m_file == -1)
         {
             m_file = 0;
@@ -233,7 +239,11 @@ public:
 
         // Linux
         // new mapping
-        m_mappedView = ::/*mmap64*/mmap(NULL, mappedBytes, PROT_READ, MAP_SHARED, m_file, offset); //Q_OS_MACOS
+#ifdef Q_OS_MACOS
+        m_mappedView = ::mmap(NULL, mappedBytes, PROT_READ, MAP_SHARED, m_file, offset);
+#else
+        m_mappedView = ::mmap64(NULL, mappedBytes, PROT_READ, MAP_SHARED, m_file, offset);
+#endif
         if (m_mappedView == MAP_FAILED)
         {
             m_mappedBytes = 0;
