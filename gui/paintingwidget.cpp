@@ -520,7 +520,7 @@ void PaintingWidget::updatePaletteWidgets()
     for (size_t i = 0; i < m_data->colorComponentCount(); ++i) {
         auto tb = new QToolButton;
         tb->setCheckable(true);
-        tb->setFixedSize(11 * devicePixelRatio(), 11 * devicePixelRatio());
+        //tb->setFixedSize(11 * devicePixelRatio(), 11 * devicePixelRatio());
         auto col = m_data->colorScheme()->color(i);
         auto col2 = (i == 0) ? Qt::red : QColor(col).darker(160);
         QString rgb = "rgb(" + QString::number(Color::red(col)) + "," + QString::number(Color::green(col)) + "," + QString::number(Color::blue(col)) + ")";
