@@ -69,7 +69,7 @@ public:
     // {
     // }
 
-#ifndef Q_OS_MACOS
+#ifdef Q_OS_WIN
     constexpr auto operator<=>(const VectorQueue&) const = default;
 #endif
 

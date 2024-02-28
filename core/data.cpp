@@ -240,7 +240,16 @@ size_t Data::selectedPointCount() const
 
 std::vector<Point> Data::randomSelectedPoints(size_t i) const
 {
+#ifdef Q_OS_LINUX
+    std::vector<Point> filter;
+    for (size_t i = 0; i < m_points.size(); ++i) {
+        if (isSelected(i)) {
+            filter.push_back(m_points[i]);
+        }
+    }
+#else
     auto filter = std::views::zip(m_points, std::ranges::views::iota(0)) | std::views::filter([&](auto elem){return isSelected(std::get<1>(elem));}) | std::views::elements<0>;
+#endif
     std::vector<Point> filtered;
     filtered.reserve(selectedPointCount());
     std::ranges::copy(filter, std::back_inserter(filtered));
