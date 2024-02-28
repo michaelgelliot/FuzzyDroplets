@@ -42,7 +42,7 @@ void PointCloud::render(QPainter & painter, bool highQualityOutput)
     QtConcurrent::blockingMap(m_pixelData.begin(), m_pixelData.end(), [](QRgb & color) {color = Color::named::transparent;});
 #endif
 
-    const double limit = std::max(1.0/m_data->colorComponentCount(), 0.999);
+    const double limit = 1.0/m_data->colorComponentCount() - 0.000001;
 
     if (highQualityOutput) {
 

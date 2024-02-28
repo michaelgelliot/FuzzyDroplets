@@ -1,4 +1,4 @@
-#include "DBScanwidget.h"
+#include "dbscanwidget.h"
 #include "gui/dropletgraphwidget.h"
 #include <QFormLayout>
 #include <QSpinBox>
@@ -165,7 +165,7 @@ void DBScanWorker::proceed()
                 return pow(m_data->point(i).x() - value.x(),2) + pow((m_data->point(i).y() - value.y()),2) < m_epsilon2;
             });
             if (neighbours.size() > m_minPts) {
-#ifdef Q_OS_MACOS
+#ifndef Q_OS_WIN
                 seeds.reserve(seeds.size() + neighbours.size());
                 for (auto & n : neighbours)
                     seeds.insert(n);
