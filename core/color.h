@@ -78,7 +78,7 @@ template <std::ranges::range ColorContainer, std::ranges::range WeightsContainer
     assert(std::size(colors) == std::size(weights));
     //assert(approximately::equals(std::ranges::fold_left(weights, FloatingPoint(0), std::plus()), FloatingPoint(1.0)));
 
-#ifndef Q_OS_WIN
+#ifdef Q_OS_MACOS
     std::array<FloatingPoint, 4> mixed {0,0,0,0};
     for (size_t i = 0; i < colors.size(); ++i) {
         mixed[0] += pow(red(colors[i]), 2) * weights[i];
@@ -117,7 +117,7 @@ template <std::ranges::range ColorContainer>
     assert(std::size(colors) > 0);
     auto first = rgbaComponents(*std::begin(colors));
 
-#ifndef Q_OS_WIN
+#ifdef Q_OS_MACOS
     std::array<double, 4> result {(double)first[0], (double)first[1], (double)first[2], (double)first[3]};
     for (size_t i = 1; i < colors.size(); ++i) {
         auto upper = colors[i];
