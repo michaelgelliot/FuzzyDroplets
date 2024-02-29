@@ -30,7 +30,7 @@ chmod +x qt-unified-linux-x64-*
 sudo apt install qtchooser
 ```
 
-* Add the recent installation of Qt to qtchooser's database (change ```mick``` to your username!)
+* Add the recent installation of Qt to qtchooser's database (change ```mick``` to your username, change ```6.6.2``` to the specific version that you installed! check that the path is correct.)
 ```
 qtchooser -install -f qt6 /home/mick/Qt/6.6.2/gcc_64/bin/qmake
 ```
