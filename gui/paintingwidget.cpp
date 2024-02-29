@@ -469,7 +469,7 @@ void BoxBlurWorker::go()
 #ifndef Q_OS_MACOS
     std::for_each(std::execution::par, iota.begin(), iota.end(), [&](size_t & id) {
 #else
-    QtConcurrent::blockingMap(iota.begin(), iota.end(), [&](size_t & idx) {
+    QtConcurrent::blockingMap(iota.begin(), iota.end(), [&](size_t & id) {
 #endif
         ++count;
         size_t newPc = 100 * count / m_data->selectedPointCount();
