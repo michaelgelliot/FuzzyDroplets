@@ -26,7 +26,8 @@ public:
         Experimental,
         PositiveControl,
         NegativeControl,
-        NonTemplateControl
+        NonTemplateControl,
+        UnambiguousSample
     };
 
     enum SelectionType {

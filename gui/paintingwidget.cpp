@@ -9,14 +9,17 @@
 #include <QPainter>
 #include <QPushButton>
 #include <QGridLayout>
-#include <QProgressBar>
-#include <execution>
-#include "core/colorscheme.h"
-#include "generic/flowlayout.h"
-#include "gui/generic/commandstack.h"
-#include "gui/generic/themedicon.h"
-#include "plot/continuousaxis.h"
 #include "pointcloud.h"
+#include "core/colorscheme.h"
+#include "core/kernel.h"
+#include "gui/generic/flowlayout.h"
+#include "gui/generic/commandstack.h"
+#include "gui/plot/continuousaxis.h"
+
+#include <atomic>
+#include <execution>
+
+#include <QProgressBar>
 #include <QCheckBox>
 #include <QToolButton>
 #include <QButtonGroup>
@@ -25,10 +28,7 @@
 #include <QToolTip>
 #include <QThread>
 #include <QGuiApplication>
-#include <atomic>
 #include <QStyleHints>
-#include "core/matrix.h"
-#include "core/kernel.h"
 
 #ifdef Q_OS_MACOS
 #include <QtConcurrent>
@@ -143,7 +143,7 @@ PaintingWidget::~PaintingWidget()
 void PaintingWidget::colorsSetProgramatically()
 {
     size_t count = 0;
-    for (size_t i = 0; i < m_painted.size(); ++i) {
+    for (qsizetype i = 0; i < m_painted.size(); ++i) {
         m_painted[i] = (m_data->isSelected(i) && m_data->fuzzyColor(i) != m_prevColors[i]);
         count += m_painted[i];
     }
@@ -171,7 +171,7 @@ void PaintingWidget::deterministicallyDefuzzify()
 void PaintingWidget::clear()
 {
     size_t count = 0;
-    for (size_t i = 0; i < m_painted.size(); ++i) {
+    for (qsizetype i = 0; i < m_painted.size(); ++i) {
         m_painted[i] = (m_data->isSelected(i) && m_data->fuzzyColor(i).weight(0) != 1);
         if (m_painted[i]) {
             m_data->setColor(i, 0);
@@ -222,7 +222,7 @@ PaintingWidget::PaintStrokeCommand::PaintStrokeCommand(PaintingWidget * p, const
 #endif
         painted.begin(), painted.end(), [](bool b){return b;});
     m_data.reserve(numModified);
-    for (size_t i = 0; i < painted.size(); ++i) {
+    for (qsizetype i = 0; i < painted.size(); ++i) {
         if (painted[i]) {
             m_data.push_back({i, prevColors[i], p->data()->fuzzyColor(i)});
         }
@@ -464,7 +464,7 @@ void BoxBlurWorker::go()
     std::iota(iota.begin(), iota.end(), 0);
 
     int pc = 0;
-    std::atomic<size_t> count = 0;
+    std::atomic<int> count = 0;
 
 #ifndef Q_OS_MACOS
     std::for_each(std::execution::par, iota.begin(), iota.end(), [&](size_t & id) {
@@ -472,7 +472,7 @@ void BoxBlurWorker::go()
     QtConcurrent::blockingMap(iota.begin(), iota.end(), [&](size_t & id) {
 #endif
         ++count;
-        size_t newPc = 100 * count / m_data->selectedPointCount();
+        int newPc = 100 * count / (int)m_data->selectedPointCount();
         if (newPc != pc) {
             pc = newPc;
             emit updateProgress(pc);
@@ -517,7 +517,7 @@ void PaintingWidget::updatePaletteWidgets()
 
     m_paletteWidgets.clear();
 
-    for (size_t i = 0; i < m_data->colorComponentCount(); ++i) {
+    for (int i = 0; i < m_data->colorComponentCount(); ++i) {
         auto tb = new QToolButton;
         tb->setCheckable(true);
         //tb->setFixedSize(11 * devicePixelRatio(), 11 * devicePixelRatio());

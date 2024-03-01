@@ -112,6 +112,7 @@ MainWindow::MainWindow(QWidget *parent)
     m_selectionMenu = editMenu->addMenu("Selection");
     m_selectionMenu->addAction("Select All", m_sampleListWidget, &SampleListWidget::selectAll);
     m_selectionMenu->addAction("Select Experimental Samples", m_sampleListWidget, &SampleListWidget::selectExperimentalSamples);
+    m_selectionMenu->addAction("Select Unambiguous Samples", m_sampleListWidget, &SampleListWidget::selectUnambiguousSamples);
     m_selectionMenu->addAction("Select Positive Controls", m_sampleListWidget, &SampleListWidget::selectPositiveControls);
     m_selectionMenu->addAction("Select Negative Controls", m_sampleListWidget, &SampleListWidget::selectNegativeControls);
     m_selectionMenu->addAction("Select Non-Template Controls", m_sampleListWidget, &SampleListWidget::selectNonTemplateControls);
@@ -289,10 +290,13 @@ MainWindow::~MainWindow()
 void MainWindow::closeEvent(QCloseEvent * e)
 {
     if (m_commandStack->canUndo()) {
-        if (QMessageBox::question(this, "Save Changes?", "Export changes before closing?", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes) == QMessageBox::Yes) {
+        auto result = QMessageBox::question(this, "Save Changes?", "Export changes before closing?", QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Yes);
+        if (result == QMessageBox::Yes) {
             if (!exportAll()) {
                 e->ignore();
             }
+        } else if (result != QMessageBox::No) {
+            e->ignore();
         }
     }
 }
@@ -738,6 +742,8 @@ void MainWindow::exportReport()
                 ts << "Negative Control,";
             else if (m_data->sampleType(i) == Data::NonTemplateControl)
                 ts << "Non-Template Control,";
+            else if (m_data->sampleType(i) == Data::UnambiguousSample)
+                ts << "Unambiguous Sample";
             std::vector<double> counts(m_data->colorComponentCount(), 0);
             for (size_t pt = m_data->sampleIndices(i)[0]; pt < m_data->sampleIndices(i)[1]; ++pt) {
                 for (size_t col = 0; col < m_data->colorComponentCount(); ++col) {

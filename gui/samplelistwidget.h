@@ -59,6 +59,7 @@ public slots:
     void selectPositiveControls();
     void selectNegativeControls();
     void selectNonTemplateControls();
+    void selectUnambiguousSamples();
 
 private:
 

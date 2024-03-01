@@ -35,18 +35,21 @@ AssignmentWidget::AssignmentWidget(Data * data, PaintingWidget * painting, Dropl
     m_sourceTargetGroup = new QGroupBox;
     QFormLayout * form = new QFormLayout;
     m_targetComboBox = new QComboBox;
-    m_targetComboBox->addItems({"Sample Data", "Selection"});
+    m_targetComboBox->addItems({"Experimental Samples", "Selection"});
     form->addRow("Assign to", m_targetComboBox);
     m_sourceTargetGroup->setLayout(form);
     layout->addWidget(m_sourceTargetGroup);
 
+    m_unambCB = new QCheckBox("Unambiguous Samples");
     m_posCB = new QCheckBox("Positive Controls");
     m_negCB = new QCheckBox("Negative Controls");
     m_ntcCB = new QCheckBox("Non-Template Controls");
+    m_unambCB->setChecked(true);
     m_posCB->setChecked(true);
     m_negCB->setChecked(true);
     m_ntcCB->setChecked(true);
-    form->addRow("Assign from", m_posCB);
+    form->addRow("Assign from", m_unambCB);
+    form->addRow("", m_posCB);
     form->addRow("", m_negCB);
     form->addRow("", m_ntcCB);
 
@@ -201,6 +204,18 @@ QList<size_t> AssignmentWidget::sourceIndices() const
     if (m_ntcCB->isChecked()) {
         for (int i = 0; i < m_data->sampleCount(); ++i) {
             if (m_data->sampleType(i) == Data::SampleType::NonTemplateControl && !(m_targetComboBox->currentIndex() == 0 && m_data->sampleType(i) == Data::SampleType::Experimental)) {
+                auto bounds = m_data->sampleIndices(i);
+                for (auto j = bounds[0]; j < bounds[1]; ++j) {
+                    if (!(m_targetComboBox->currentIndex() == 1 && m_data->isSelected(j)))
+                        source.push_back(j);
+                }
+            }
+        }
+    }
+
+    if (m_unambCB->isChecked()) {
+        for (int i = 0; i < m_data->sampleCount(); ++i) {
+            if (m_data->sampleType(i) == Data::SampleType::UnambiguousSample && !(m_targetComboBox->currentIndex() == 0 && m_data->sampleType(i) == Data::SampleType::Experimental)) {
                 auto bounds = m_data->sampleIndices(i);
                 for (auto j = bounds[0]; j < bounds[1]; ++j) {
                     if (!(m_targetComboBox->currentIndex() == 1 && m_data->isSelected(j)))

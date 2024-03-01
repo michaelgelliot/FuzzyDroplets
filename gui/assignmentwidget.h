@@ -63,6 +63,7 @@ private:
     QCheckBox * m_posCB;
     QCheckBox * m_negCB;
     QCheckBox * m_ntcCB;
+    QCheckBox * m_unambCB;
     QGroupBox * m_sourceTargetGroup;
 };
 

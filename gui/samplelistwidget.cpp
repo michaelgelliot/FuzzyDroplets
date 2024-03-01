@@ -30,10 +30,11 @@ SampleListWidget::SampleListWidget(Data * data, CommandStack * commandStack, QWi
     m_commandStack(commandStack)
 {
     // init some internal data that tells what text to use to describe different data types
-    m_dataTypeToLabel = {{Data::Experimental, "Sample"},
+    m_dataTypeToLabel = {{Data::Experimental, "Experimental Sample"},
                          {Data::PositiveControl,    "Positive Control"},
                          {Data::NegativeControl,    "Negative Control"},
-                         {Data::NonTemplateControl, "Non-Template"}};
+                         {Data::NonTemplateControl, "Non-Template"},
+                         {Data::UnambiguousSample, "Unambiguous Sample"}};
 
     // create a table widget and make it fill this widget
     m_tableWidget = new QTableWidget(this);
@@ -66,7 +67,8 @@ SampleListWidget::SampleListWidget(Data * data, CommandStack * commandStack, QWi
     auto delegate = new ComboBoxItemDelegate({m_dataTypeToLabel[Data::Experimental],
                                               m_dataTypeToLabel[Data::PositiveControl],
                                               m_dataTypeToLabel[Data::NegativeControl],
-                                              m_dataTypeToLabel[Data::NonTemplateControl]}, false);
+                                              m_dataTypeToLabel[Data::NonTemplateControl],
+                                              m_dataTypeToLabel[Data::UnambiguousSample]}, false);
     m_tableWidget->setItemDelegateForColumn(1, delegate);
 
     // set up connections between signals from the table widget and slots in this object
@@ -302,6 +304,15 @@ void SampleListWidget::selectNonTemplateControls()
     std::vector<size_t> vec;
     for (size_t i = 0; i < m_data->sampleCount(); ++i)
         if (m_data->sampleType(i) == Data::NonTemplateControl)
+            vec.push_back(i);
+    m_data->setSelectedSamples(vec);
+}
+
+void SampleListWidget::selectUnambiguousSamples()
+{
+    std::vector<size_t> vec;
+    for (size_t i = 0; i < m_data->sampleCount(); ++i)
+        if (m_data->sampleType(i) == Data::UnambiguousSample)
             vec.push_back(i);
     m_data->setSelectedSamples(vec);
 }
