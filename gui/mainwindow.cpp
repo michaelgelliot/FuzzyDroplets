@@ -743,7 +743,7 @@ void MainWindow::exportReport()
             else if (m_data->sampleType(i) == Data::NonTemplateControl)
                 ts << "Non-Template Control,";
             else if (m_data->sampleType(i) == Data::UnambiguousSample)
-                ts << "Unambiguous Sample";
+                ts << "Unambiguous Sample,";
             std::vector<double> counts(m_data->colorComponentCount(), 0);
             for (size_t pt = m_data->sampleIndices(i)[0]; pt < m_data->sampleIndices(i)[1]; ++pt) {
                 for (size_t col = 0; col < m_data->colorComponentCount(); ++col) {
