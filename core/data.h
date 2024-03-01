@@ -2,7 +2,6 @@
 #define FUZZY_DROPLETS_DATA_H
 
 #include "core/design.h"
-#include "fuzzyqt.h"
 #include "geometry.h"
 #include "fuzzycolor.h"
 
@@ -10,16 +9,12 @@ class Design;
 class ColorScheme;
 template <typename> class QuadTree;
 
-#ifdef FUZZY_QT
 #include <QObject>
+
 class Data: public QObject
-#else
-class Data
-#endif
 {
-#ifdef FUZZY_QT
     Q_OBJECT
-#endif
+
 public:
 
     enum SampleType {
@@ -36,11 +31,8 @@ public:
         SelectedAndUnselected
     };
 
-#ifdef FUZZY_QT
+
     Data(QObject * parent = nullptr);
-#else
-    Data();
-#endif
     ~Data();
 
     size_t pointCount() const {return m_points.size();}
@@ -106,8 +98,6 @@ public:
     std::pair<size_t, double> nearestNeighbourInSelection(Point target, double xScale = 1, double yScale = 1, const std::function<bool(size_t)> & filter = [](size_t t){return true;});
     QList<size_t> rectangleSearchSelection(OrthogonalRectangle rect, const std::function<bool(size_t)> & filter = [](size_t t){return true;}) const;
 
-#ifdef FUZZY_QT
-
 signals:
 
     void samplesAdded(std::vector<size_t>);
@@ -117,8 +107,6 @@ signals:
     void designChanged();
     void fullRepaint();
     void sampleTypesChanged(std::vector<size_t> samples);
-
-#endif
 
 private:
 

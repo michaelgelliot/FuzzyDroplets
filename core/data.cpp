@@ -1,7 +1,6 @@
 #include "data.h"
 #include "design.h"
 #include "colorscheme.h"
-#include "round.h"
 #include "mean.h"
 #include "line_feeder.hpp"
 #include "quadtree.h"
@@ -16,12 +15,8 @@
 #include <QtConcurrent>
 #endif
 
-#ifdef FUZZY_QT
-
 #include <QGuiApplication>
 #include <QStyleHints>
-
-
 
 Data::Data(QObject * parent)
     : QObject(parent),
@@ -29,12 +24,6 @@ Data::Data(QObject * parent)
 {
     m_colorScheme->setColor(0, qGuiApp->styleHints()->colorScheme() == Qt::ColorScheme::Dark ? Color::named::white : Color::named::black);
 }
-#else
-Data::Data()
-    : m_colorScheme(new ColorScheme)
-{
-}
-#endif
 
 Data::~Data()
 {
@@ -157,9 +146,7 @@ void Data::setColorZOrder(size_t rgb, size_t pos)
     if (it != m_colorZOrder.end()) {
         m_colorZOrder.erase(it);
         m_colorZOrder.insert(m_colorZOrder.begin() + std::clamp(pos, (size_t)0, (size_t)m_colorZOrder.size()), rgb);
-#ifdef FUZZY_QT
         emit colorZOrderChanged(rgb, pos);
-#endif
     }
 }
 
@@ -192,9 +179,7 @@ void Data::setColorComponentCount(size_t count)
             m_rgba[i] = m_colors[i].rgba(baseColors);
         });
 
-#ifdef FUZZY_QT
         emit colorCountChanged();
-#endif
     }
 }
 
@@ -225,9 +210,7 @@ void Data::setSelectedSamples(const std::vector<size_t> & indices)
 #endif
         std::fill(m_selected.begin() + m_samples[i][0], m_selected.begin() + m_samples[i][1], true);
     });
-#ifdef FUZZY_QT
     emit selectedSamplesChanged();
-#endif
 }
 
 size_t Data::selectedPointCount() const
@@ -607,10 +590,8 @@ void Data::addSamples(const std::vector<std::string> & paths, std::string & erro
     delete m_quadTree;
     m_quadTree = new QuadTree<Point>(m_points, [](const Point & p){return p.x();}, [&](const Point & p){return p.y();});
 
-#ifdef FUZZY_QT
     if (addedSamples.size() > 0)
         emit samplesAdded(addedSamples);
-#endif
 
 }
 
@@ -663,9 +644,7 @@ void Data::matchSelectedColorToUnselectedColors()
         }
     });
 
-#ifdef FUZZY_QT
     emit fullRepaint();
-#endif
 }
 
 void Data::matchColorsToDesign(SelectionType selection)
@@ -731,9 +710,7 @@ void Data::matchColorsToDesign(SelectionType selection)
         }
     });
 
-#ifdef FUZZY_QT
     emit fullRepaint();
-#endif
 }
 
 QList<size_t> Data::rectangleSearchSelection(OrthogonalRectangle rect, const std::function<bool(size_t)> & filter) const
@@ -760,9 +737,7 @@ void Data::setSampleType(std::vector<size_t> samples, SampleType type)
     for (auto sample : samples) {
         m_sampleTypes[sample] = type;
     }
-#ifdef FUZZY_QT
     emit sampleTypesChanged(samples);
-#endif
 }
 
 void Data::setSampleType(std::vector<size_t> samples, std::vector<SampleType> type)
@@ -771,7 +746,5 @@ void Data::setSampleType(std::vector<size_t> samples, std::vector<SampleType> ty
     for (int i = 0; i < samples.size(); ++i) {
         m_sampleTypes[samples[i]] = type[i];
     }
-#ifdef FUZZY_QT
     emit sampleTypesChanged(samples);
-#endif
 }

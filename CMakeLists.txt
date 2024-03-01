@@ -15,7 +15,7 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Concurrent)
 
 set(PROJECT_SOURCES
         main.cpp
-        fuzzyqt.h
+
 
         core/approximately.h
         core/geometry.h
