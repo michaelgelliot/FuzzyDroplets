@@ -6,4 +6,6 @@ Fuzzy Droplets is a cross-platform, open-source and user-friendly desktop applic
 
 [Download an executable](https://github.com/michaelgelliot/FuzzyDroplets/releases/latest) from the latest release or [build from source](https://github.com/michaelgelliot/FuzzyDroplets/blob/main/buildFromSource.md).
 
+## Tutorial
 
+Coming within the next day or two...
