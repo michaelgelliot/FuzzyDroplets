@@ -810,7 +810,7 @@ void MainWindow::citation()
 
 void MainWindow::openTutorial()
 {
-    QDesktopServices::openUrl(QUrl("https://github.com/michaelgelliot/FuzzyDroplets"));
+    QDesktopServices::openUrl(QUrl("https://github.com/michaelgelliot/FuzzyDroplets/blob/main/doc/tutorial.pdf"));
 }
 
 void MainWindow::setUserTheme()
