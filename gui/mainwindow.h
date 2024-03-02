@@ -23,6 +23,13 @@ class MainWindow : public QMainWindow
 
 public:
 
+    enum Theme
+    {
+        Dark,
+        Light,
+        User
+    };
+
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
@@ -59,6 +66,9 @@ private slots:
     void selectedSamplesChanged();
     void citation();
     void openTutorial();
+    void setUserTheme();
+    void setDarkTheme();
+    void setLightTheme();
 
 private:
 
@@ -97,6 +107,7 @@ private:
     QMenu * m_rightAxisMenu;
     QMenu * m_selectionMenu;
     QPushButton * m_expDesignPushButton;
+    Theme m_theme {User};
 };
 
 #endif // FUZZY_DROPLETS_MAINWINDOW_H

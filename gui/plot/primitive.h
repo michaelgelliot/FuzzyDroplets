@@ -2,7 +2,6 @@
 #define FUZZYDROPLETS_GUI_PLOT_PRIMITIVE_H
 
 #include <QPalette>
-#include <algorithm>
 
 namespace Plot
 {
@@ -18,7 +17,7 @@ public:
     void setVisibility(bool visible) {m_visible = visible;}
 
     bool autoColor() const {return m_autoColor;}
-    void setAutoColor(bool autoColor) {m_autoColor = autoColor;}
+    virtual void setAutoColor(bool autoColor) {m_autoColor = autoColor;}
 
     bool clipToViewport() const {return m_clipToViewport;}
     void setClipToViewport(bool clip) {m_clipToViewport = clip;}

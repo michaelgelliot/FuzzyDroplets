@@ -27,6 +27,10 @@ public:
     const QBrush & viewportBrush() const {return m_viewportBrush;}
     void setViewportBrush(const QBrush & brush) {m_viewportBrush = brush; update();}
 
+    void setDarkTheme();
+    void setLightTheme();
+    void setUserTheme();
+
     QRectF viewportRect() const;
 
     void recalculateLayout();

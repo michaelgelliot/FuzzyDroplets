@@ -30,6 +30,52 @@ BoxGraphBase::~BoxGraphBase()
     delete m_bottomAxis;
 }
 
+void BoxGraphBase::setDarkTheme()
+{
+    m_backgroundBrush = Qt::black;
+    m_viewportBrush = Qt::black;
+    setAutoColor(false);
+    m_leftAxis->setAutoColor(false);
+    m_rightAxis->setAutoColor(false);
+    m_topAxis->setAutoColor(false);
+    m_bottomAxis->setAutoColor(false);
+    QPen whitePen = m_leftAxis->pen(Axis::Line);
+    whitePen.setColor(Qt::white);
+    m_leftAxis->setPen(Axis::Line | Axis::Label | Axis::MajorTick | Axis::MediumTick | Axis::MinorTick | Axis::MajorTickLabel | Axis::MediumTickLabel | Axis::MinorTickLabel, whitePen);
+    m_rightAxis->setPen(Axis::Line | Axis::Label | Axis::MajorTick | Axis::MediumTick | Axis::MinorTick | Axis::MajorTickLabel | Axis::MediumTickLabel | Axis::MinorTickLabel, whitePen);
+    m_topAxis->setPen(Axis::Line | Axis::Label | Axis::MajorTick | Axis::MediumTick | Axis::MinorTick | Axis::MajorTickLabel | Axis::MediumTickLabel | Axis::MinorTickLabel, whitePen);
+    m_bottomAxis->setPen(Axis::Line | Axis::Label | Axis::MajorTick | Axis::MediumTick | Axis::MinorTick | Axis::MajorTickLabel | Axis::MediumTickLabel | Axis::MinorTickLabel, whitePen);
+    update();
+}
+
+void BoxGraphBase::setLightTheme()
+{
+    m_backgroundBrush = Qt::white;
+    m_viewportBrush = Qt::white;
+    setAutoColor(false);
+    m_leftAxis->setAutoColor(false);
+    m_rightAxis->setAutoColor(false);
+    m_topAxis->setAutoColor(false);
+    m_bottomAxis->setAutoColor(false);
+    QPen blackPen = m_leftAxis->pen(Axis::Line);
+    blackPen.setColor(Qt::black);
+    m_leftAxis->setPen(Axis::Line | Axis::Label | Axis::MajorTick | Axis::MediumTick | Axis::MinorTick | Axis::MajorTickLabel | Axis::MediumTickLabel | Axis::MinorTickLabel, blackPen);
+    m_rightAxis->setPen(Axis::Line | Axis::Label | Axis::MajorTick | Axis::MediumTick | Axis::MinorTick | Axis::MajorTickLabel | Axis::MediumTickLabel | Axis::MinorTickLabel, blackPen);
+    m_topAxis->setPen(Axis::Line | Axis::Label | Axis::MajorTick | Axis::MediumTick | Axis::MinorTick | Axis::MajorTickLabel | Axis::MediumTickLabel | Axis::MinorTickLabel, blackPen);
+    m_bottomAxis->setPen(Axis::Line | Axis::Label | Axis::MajorTick | Axis::MediumTick | Axis::MinorTick | Axis::MajorTickLabel | Axis::MediumTickLabel | Axis::MinorTickLabel, blackPen);
+    update();
+}
+
+void BoxGraphBase::setUserTheme()
+{
+    setAutoColor(true);
+    m_leftAxis->setAutoColor(true);
+    m_rightAxis->setAutoColor(true);
+    m_topAxis->setAutoColor(true);
+    m_bottomAxis->setAutoColor(true);
+    update();
+}
+
 void BoxGraphBase::setLeftAxis(Axis * axis)
 {
     delete m_leftAxis;

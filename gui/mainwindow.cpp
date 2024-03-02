@@ -137,6 +137,21 @@ MainWindow::MainWindow(QWidget *parent)
     m_convexHullAction->setCheckable(true);
     m_convexHullAction->setEnabled(false);
     viewMenu->addSeparator();
+    auto themeMenu = viewMenu->addMenu("Theme");
+    QActionGroup * themeActionGroup = new QActionGroup(this);
+    themeActionGroup->setExclusive(true);
+    auto themeAction = themeMenu->addAction("Desktop", this, &MainWindow::setUserTheme);
+    themeAction->setCheckable(true);
+    themeAction->setChecked(true);
+    themeActionGroup->addAction(themeAction);
+    themeAction = themeMenu->addAction("Light", this, &MainWindow::setLightTheme);
+    themeAction->setCheckable(true);
+    themeAction->setChecked(false);
+    themeActionGroup->addAction(themeAction);
+    themeAction = themeMenu->addAction("Dark", this, &MainWindow::setDarkTheme);
+    themeAction->setCheckable(true);
+    themeAction->setChecked(false);
+    themeActionGroup->addAction(themeAction);
     auto markersMenu = viewMenu->addMenu("Markers");
     auto markerSizeMenu = markersMenu->addMenu("Size");
     SliderAction * sliderAction = new SliderAction(tr(""));
@@ -340,14 +355,16 @@ void MainWindow::guiColorSchemeChanged()
     m_zoomInAction->setIcon(themedIcon(":/zoomIn"));
     m_zoomOutAction->setIcon(themedIcon(":/zoomOut"));
     m_exportImageMenu->setIcon(themedIcon(":/image"));
-    if (qGuiApp->styleHints()->colorScheme() == Qt::ColorScheme::Dark)
-        m_data->colorScheme()->setColor(0, QColor(Qt::white).rgb());
-    else
-        m_data->colorScheme()->setColor(0, QColor(Qt::black).rgb());
-    m_data->updateRgba();
-    m_paintingWidget->updatePaletteWidgets();
-    m_graphWidget->updateStaticPrimitives();
-    m_graphWidget->update();
+    if (m_theme == User) {
+        if (qGuiApp->styleHints()->colorScheme() == Qt::ColorScheme::Dark)
+            m_data->colorScheme()->setColor(0, QColor(Qt::white).rgb());
+        else
+            m_data->colorScheme()->setColor(0, QColor(Qt::black).rgb());
+        m_data->updateRgba();
+        m_paintingWidget->updatePaletteWidgets();
+        m_graphWidget->updateStaticPrimitives();
+        m_graphWidget->update();
+    }
 }
 
 void MainWindow::zoomMarkersCompletely()
@@ -794,4 +811,40 @@ void MainWindow::citation()
 void MainWindow::openTutorial()
 {
     QDesktopServices::openUrl(QUrl("https://github.com/michaelgelliot/FuzzyDroplets"));
+}
+
+void MainWindow::setUserTheme()
+{
+    m_graphWidget->setUserTheme();
+    if (qGuiApp->styleHints()->colorScheme() == Qt::ColorScheme::Dark)
+        m_data->colorScheme()->setColor(0, QColor(Qt::white).rgb());
+    else
+        m_data->colorScheme()->setColor(0, QColor(Qt::black).rgb());
+    m_data->updateRgba();
+    m_paintingWidget->updatePaletteWidgets();
+    m_graphWidget->updateStaticPrimitives();
+    m_graphWidget->repaintEntireGraph();
+    m_theme = User;
+}
+
+void MainWindow::setDarkTheme()
+{
+    m_graphWidget->setDarkTheme();
+    m_data->colorScheme()->setColor(0, QColor(Qt::white).rgb());
+    m_data->updateRgba();
+    m_paintingWidget->updatePaletteWidgets();
+    m_graphWidget->updateStaticPrimitives();
+    m_graphWidget->repaintEntireGraph();
+    m_theme = Dark;
+}
+
+void MainWindow::setLightTheme()
+{
+    m_graphWidget->setLightTheme();
+    m_data->colorScheme()->setColor(0, QColor(Qt::black).rgb());
+    m_data->updateRgba();
+    m_paintingWidget->updatePaletteWidgets();
+    m_graphWidget->updateStaticPrimitives();
+    m_graphWidget->repaintEntireGraph();
+    m_theme = Light;
 }
