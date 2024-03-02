@@ -267,7 +267,7 @@ void BoxGraphBase::render(QPainter & paint, bool highQualityOutput)
     if (highQualityOutput) {
         // Qt SVG does not support clipping so before drawing axes we blank out everything outside the graph viewport
         QRegion region = QRegion(rect()).subtracted(viewportRect().toRect());
-        paint.setBrush(palette().base());
+        apply(paint, m_backgroundBrush, QPalette::Base);
         paint.setPen(Qt::NoPen);
         for (auto & rect : region) {
             paint.drawRect(rect);
