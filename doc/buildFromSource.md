@@ -1,3 +1,31 @@
+[Windows Instructions](#Windows)
+
+[Mac Instructions](#Mac)
+
+[Linux Instructions](#Linux)
+
+# Windows
+* Install [Visual Studio Community Edition](https://visualstudio.microsoft.com/vs/community/) selecting options for desktop C++ development. After installing, run at least once in order to enswer your username and password. 
+
+* Download the [qt online installer](https://www.qt.io/download-qt-installer-oss) and install the latest desktop build system
+
+* Run QtCreator, load the project by selecting ```CMakeLists.txt``` in the main folder of Fuzzy Droplets, and configure.
+
+* During configuration, ensure that the msvc compiler is selected, not the mingw-gcc that is bundled with QtCreator. The latter cannot compile Fuzzy Droplets.
+
+* Set build configuration to Release
+* Build
+
+# Mac
+* Install [XCode](https://developer.apple.com/xcode/).
+
+* Download the [qt online installer](https://www.qt.io/download-qt-installer-oss) and install the latest desktop build system
+
+* Run QtCreator, load the project by selecting ```CMakeLists.txt``` in the main folder of Fuzzy Droplets, and configure.
+
+* Set build configuration to Release
+* Build
+
 # Linux
 Fuzzy Droplets requires gcc >= 11.4 and Qt >= 6.5. Many linux distributions will not have a version of Qt as recent as this. The easiest way of obtaining it is to use the Qt online installer. Below I will provide the steps to compile Fuzzy Droplets assuming you have a fresh install of Ubuntu (the steps will be very similar for other distributions).
 
