@@ -1,6 +1,13 @@
 #include "paintingwidget.h"
 #include "dropletgraphwidget.h"
+#include "pointcloud.h"
+#include "generic/flowlayout.h"
+#include "generic/commandstack.h"
+#include "plot/continuousaxis.h"
 #include "../core/data.h"
+#include "../core/colorscheme.h"
+#include "../core/kernel.h"
+
 #include <QBoxLayout>
 #include <QGroupBox>
 #include "generic/launchwidget.h"
@@ -9,12 +16,6 @@
 #include <QPainter>
 #include <QPushButton>
 #include <QGridLayout>
-#include "pointcloud.h"
-#include "../core/colorscheme.h"
-#include "../core/kernel.h"
-#include "generic/flowlayout.h"
-#include "generic/commandstack.h"
-#include "plot/continuousaxis.h"
 
 #include <atomic>
 #include <execution>

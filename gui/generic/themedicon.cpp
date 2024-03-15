@@ -21,5 +21,10 @@ QPixmap themedPixmap(const QString & path)
 
 QIcon themedIcon(const QString & path)
 {
-    return QIcon(themedPixmap(path));
+    // return QIcon(themedPixmap(path));
+    if (qGuiApp->styleHints()->colorScheme() == Qt::ColorScheme::Light) {
+        return QIcon(path);
+    } else {
+        return QIcon(path + "Inverted");
+    }
 }

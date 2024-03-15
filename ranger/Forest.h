@@ -43,7 +43,7 @@ public:
   Forest();
 
     Forest(const Forest&) {}
-  Forest& operator=(const Forest&) {}
+  Forest& operator=(const Forest&)  = delete;
 
   virtual ~Forest() = default;
 

@@ -13,7 +13,6 @@
 #include "generic/themedicon.h"
 #include "generic/commandstack.h"
 #include "pointcloud.h"
-#include "plot/axis.h"
 #include "generic/slideraction.h"
 
 #include <QCheckBox>
@@ -125,7 +124,7 @@ MainWindow::MainWindow(QWidget *parent)
     m_zoomInAction = viewMenu->addAction(themedIcon(":/zoomIn"), "Zoom In", QKeySequence::ZoomIn, m_graphWidget, &DropletGraphWidget::zoomIn);
     m_zoomOutAction = viewMenu->addAction(themedIcon(":/zoomOut"), "Zoom Out", QKeySequence::ZoomOut, m_graphWidget, &DropletGraphWidget::zoomOut);
     viewMenu->addSeparator();
-    m_zoomResetAction = viewMenu->addAction("Reset Zoom", QKeyCombination(Qt::ControlModifier, Qt::Key_0), m_graphWidget, &DropletGraphWidget::resetZoom);
+    m_zoomResetAction = viewMenu->addAction(themedIcon(":/resetZoom"), "Reset Zoom", QKeyCombination(Qt::ControlModifier, Qt::Key_0), m_graphWidget, &DropletGraphWidget::resetZoom);
     m_zoomInAction->setAutoRepeat(false);
     m_zoomOutAction->setAutoRepeat(false);
     m_zoomResetAction->setAutoRepeat(false);
@@ -354,6 +353,7 @@ void MainWindow::guiColorSchemeChanged()
     m_rightAxisMenu->setIcon(themedIcon(":/borderRight"));
     m_zoomInAction->setIcon(themedIcon(":/zoomIn"));
     m_zoomOutAction->setIcon(themedIcon(":/zoomOut"));
+    m_zoomResetAction->setIcon(themedIcon(":/resetZoom"));
     m_exportImageMenu->setIcon(themedIcon(":/image"));
     if (m_theme == User) {
         if (qGuiApp->styleHints()->colorScheme() == Qt::ColorScheme::Dark)
@@ -414,12 +414,12 @@ void MainWindow::setAxisComponentVisibility(QString name, Plot::Axis * axis, Plo
     QSettings settings;
     QString componentName;
     switch (component) {
-        case Plot::Axis::Label : componentName = "Label"; break;
-        case Plot::Axis::MajorTickLabel : componentName = "MajorTickLabel"; break;
-        case Plot::Axis::MajorTick : componentName = "MajorTick"; break;
-        case Plot::Axis::MediumTick : componentName = "MediumTick"; break;
-        case Plot::Axis::MinorTick : componentName = "MinorTick"; break;
-        default: break;
+    case Plot::Axis::Label : componentName = "Label"; break;
+    case Plot::Axis::MajorTickLabel : componentName = "MajorTickLabel"; break;
+    case Plot::Axis::MajorTick : componentName = "MajorTick"; break;
+    case Plot::Axis::MediumTick : componentName = "MediumTick"; break;
+    case Plot::Axis::MinorTick : componentName = "MinorTick"; break;
+    default: break;
     }
     settings.setValue(name + "Axis" + componentName, visible);
     m_graphWidget->recalculateLayout();

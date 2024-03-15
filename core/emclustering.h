@@ -41,6 +41,8 @@ public:
         m_dists.resize(numClusters);
     }
 
+    virtual ~EMClustering() {}
+
     void setEps(double eps) {m_eps = eps;}
     double eps() const {return m_eps;}
 

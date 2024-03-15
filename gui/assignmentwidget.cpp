@@ -1,5 +1,4 @@
 #include "assignmentwidget.h"
-
 #include "randomforestwidget.h"
 #include "nearestneighbourswidget.h"
 #include "gmmassignmentwidget.h"

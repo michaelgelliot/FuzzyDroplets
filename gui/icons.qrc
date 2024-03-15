@@ -4,26 +4,17 @@
         <file alias="zoomOut">icons/zoom_out_FILL0_wght400_GRAD0_opsz48.svg</file>
         <file alias="sendToBack">icons/flip_to_back_FILL0_wght400_GRAD0_opsz48.svg</file>
         <file alias="bringToFront">icons/flip_to_front_FILL0_wght400_GRAD0_opsz48.svg</file>
-        <file alias="trashcan">icons/delete_FILL0_wght400_GRAD0_opsz48.svg</file>
         <file alias="play">icons/play_arrow_FILL0_wght400_GRAD0_opsz48 (1).svg</file>
-        <file alias="reset">icons/settings_backup_restore_FILL0_wght400_GRAD0_opsz48_edit.svg</file>
         <file alias="resetZoom">icons/zoom_out_map_FILL0_wght400_GRAD0_opsz24.svg</file>
         <file alias="square">icons/stop_FILL0_wght400_GRAD0_opsz24_edit.svg</file>
         <file alias="circle">icons/circle_FILL0_wght400_GRAD0_opsz24_edit.svg</file>
-        <file alias="print">icons/print_FILL0_wght400_GRAD0_opsz24.svg</file>
         <file alias="image">icons/image_FILL0_wght400_GRAD0_opsz24.svg</file>
         <file alias="folder">icons/folder_open_FILL0_wght400_GRAD0_opsz24.svg</file>
         <file alias="file">icons/note_FILL0_wght400_GRAD0_opsz24.svg</file>
         <file alias="exit">icons/close_FILL0_wght400_GRAD0_opsz24.svg</file>
         <file alias="refresh">icons/refresh_FILL0_wght400_GRAD0_opsz24.svg</file>
-        <file alias="history">icons/history_FILL0_wght400_GRAD0_opsz24.svg</file>
-        <file alias="tick">icons/done_FILL0_wght400_GRAD0_opsz24.svg</file>
         <file alias="redo">icons/redo_FILL0_wght400_GRAD0_opsz24.svg</file>
         <file alias="undo">icons/undo_FILL0_wght400_GRAD0_opsz24.svg</file>
-        <file alias="droplet">icons/water_drop_FILL0_wght400_GRAD0_opsz24.svg</file>
-        <file alias="nodroplet">icons/format_color_reset_FILL0_wght400_GRAD0_opsz24.svg</file>
-        <file alias="shuffle">icons/shuffle_FILL0_wght400_GRAD0_opsz24.svg</file>
-        <file alias="shuffle_on">icons/shuffle_on_FILL0_wght400_GRAD0_opsz24.svg</file>
         <file alias="science">icons/science_FILL0_wght400_GRAD0_opsz24.svg</file>
         <file alias="hourglass">icons/hourglass_empty_FILL0_wght400_GRAD0_opsz24.svg</file>
         <file alias="save">icons/save_FILL0_wght400_GRAD0_opsz24.svg</file>
@@ -32,5 +23,30 @@
         <file alias="borderTop">icons/border_top_FILL0_wght400_GRAD0_opsz24.svg</file>
         <file alias="borderLeft">icons/border_left_FILL0_wght400_GRAD0_opsz24.svg</file>
         <file alias="borderBottom">icons/border_bottom_FILL0_wght400_GRAD0_opsz24.svg</file>
+
+        <file alias="zoomInInverted">icons/inverted/zoom_in_FILL0_wght400_GRAD0_opsz48.svg</file>
+        <file alias="zoomOutInverted">icons/inverted/zoom_out_FILL0_wght400_GRAD0_opsz48.svg</file>
+        <file alias="sendToBackInverted">icons/inverted/flip_to_back_FILL0_wght400_GRAD0_opsz48.svg</file>
+        <file alias="bringToFrontInverted">icons/inverted/flip_to_front_FILL0_wght400_GRAD0_opsz48.svg</file>
+        <file alias="playInverted">icons/inverted/play_arrow_FILL0_wght400_GRAD0_opsz48 (1).svg</file>
+        <file alias="resetZoomInverted">icons/inverted/zoom_out_map_FILL0_wght400_GRAD0_opsz24.svg</file>
+        <file alias="squareInverted">icons/inverted/stop_FILL0_wght400_GRAD0_opsz24_edit.svg</file>
+        <file alias="circleInverted">icons/inverted/circle_FILL0_wght400_GRAD0_opsz24_edit.svg</file>
+        <file alias="imageInverted">icons/inverted/image_FILL0_wght400_GRAD0_opsz24.svg</file>
+        <file alias="folderInverted">icons/inverted/folder_open_FILL0_wght400_GRAD0_opsz24.svg</file>
+        <file alias="fileInverted">icons/inverted/note_FILL0_wght400_GRAD0_opsz24.svg</file>
+        <file alias="exitInverted">icons/inverted/close_FILL0_wght400_GRAD0_opsz24.svg</file>
+        <file alias="refreshInverted">icons/inverted/refresh_FILL0_wght400_GRAD0_opsz24.svg</file>
+        <file alias="redoInverted">icons/inverted/redo_FILL0_wght400_GRAD0_opsz24.svg</file>
+        <file alias="undoInverted">icons/inverted/undo_FILL0_wght400_GRAD0_opsz24.svg</file>
+        <file alias="scienceInverted">icons/inverted/science_FILL0_wght400_GRAD0_opsz24.svg</file>
+        <file alias="hourglassInverted">icons/inverted/hourglass_empty_FILL0_wght400_GRAD0_opsz24.svg</file>
+        <file alias="saveInverted">icons/inverted/save_FILL0_wght400_GRAD0_opsz24.svg</file>
+        <file alias="exportReportInverted">icons/inverted/export_notes_FILL0_wght400_GRAD0_opsz24.svg</file>
+        <file alias="borderRightInverted">icons/inverted/border_right_FILL0_wght400_GRAD0_opsz24.svg</file>
+        <file alias="borderTopInverted">icons/inverted/border_top_FILL0_wght400_GRAD0_opsz24.svg</file>
+        <file alias="borderLeftInverted">icons/inverted/border_left_FILL0_wght400_GRAD0_opsz24.svg</file>
+        <file alias="borderBottomInverted">icons/inverted/border_bottom_FILL0_wght400_GRAD0_opsz24.svg</file>
+
     </qresource>
 </RCC>

@@ -1,9 +1,8 @@
 #ifndef FUZZY_DROPLETS_MAINWINDOW_H
 #define FUZZY_DROPLETS_MAINWINDOW_H
 
-#include <QMainWindow>
 #include "plot/axis.h"
-
+#include <QMainWindow>
 class Data;
 class CommandStack;
 class SampleListWidget;

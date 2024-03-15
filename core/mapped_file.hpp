@@ -94,9 +94,15 @@ public:
         }
 
         // file size
+#ifdef Q_OS_MACOS
+        struct stat statInfo;
+        if (::fstat(m_file, &statInfo) < 0)
+            return;
+#else
         struct stat64 statInfo;
         if (fstat64(m_file, &statInfo) < 0)
             return;
+#endif
 
         m_filesize = statInfo.st_size;
 #endif
