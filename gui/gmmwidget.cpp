@@ -6,7 +6,7 @@
 #include <QComboBox>
 #include <QSpinBox>
 #include <QCheckBox>
-#include "core/gmm.h"
+#include "../core/gmm.h"
 #include "emworker.h"
 
 GMMWidget::GMMWidget(Data * data, DropletGraphWidget * graph, QWidget * parent)

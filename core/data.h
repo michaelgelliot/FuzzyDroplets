@@ -1,7 +1,7 @@
 #ifndef FUZZY_DROPLETS_DATA_H
 #define FUZZY_DROPLETS_DATA_H
 
-#include "core/design.h"
+#include "design.h"
 #include "geometry.h"
 #include "fuzzycolor.h"
 

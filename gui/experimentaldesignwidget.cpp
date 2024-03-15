@@ -1,13 +1,13 @@
 #include "experimentaldesignwidget.h"
 #include "samplelistwidget.h"
 #include "pointcloud.h"
-#include "gui/generic/commandstack.h"
+#include "generic/commandstack.h"
 #include "plot/continuousaxis.h"
 #include "plot/marker2d.h"
-#include "core/data.h"
-#include "core/colorscheme.h"
-#include "gui/paintingwidget.h"
-#include "gui/dropletgraphwidget.h"
+#include "../core/data.h"
+#include "../core/colorscheme.h"
+#include "paintingwidget.h"
+#include "dropletgraphwidget.h"
 
 #include <QBoxLayout>
 #include <QSpinBox>

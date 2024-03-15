@@ -1,5 +1,5 @@
 #include "dbscanwidget.h"
-#include "gui/dropletgraphwidget.h"
+#include "dropletgraphwidget.h"
 #include <QFormLayout>
 #include <QSpinBox>
 #include <QGroupBox>
@@ -8,7 +8,7 @@
 #include <QMouseEvent>
 #include <QThread>
 #include <unordered_set>
-#include "core/data.h"
+#include "../core/data.h"
 
 DBScanWidget::DBScanWidget(Data * data, DropletGraphWidget * graph, QWidget *parent)
     : ClusterMethodWidget{parent},

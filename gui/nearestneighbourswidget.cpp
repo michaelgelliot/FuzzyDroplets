@@ -3,7 +3,7 @@
 #include <QSpinBox>
 #include <QCheckBox>
 #include <QThread>
-#include "core/data.h"
+#include "../core/data.h"
 
 #ifdef Q_OS_MACOS
 #include <QtConcurrent>

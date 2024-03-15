@@ -1,11 +1,7 @@
 #include "mainwindow.h"
-#include "core/colorscheme.h"
-#include "core/data.h"
-#include "gui/generic/themedicon.h"
-#include "qcheckbox.h"
-#include "qcombobox.h"
-#include "qformlayout.h"
-#include "qspinbox.h"
+#include "../core/colorscheme.h"
+#include "../core/data.h"
+#include "generic/themedicon.h"
 #include "samplelistwidget.h"
 #include "dropletgraphwidget.h"
 #include "clusteringwidget.h"
@@ -15,11 +11,15 @@
 #include "generic/commandstack.h"
 #include "generic/shelfwidget.h"
 #include "generic/themedicon.h"
-#include "gui/generic/commandstack.h"
+#include "generic/commandstack.h"
 #include "pointcloud.h"
 #include "plot/axis.h"
-#include "gui/generic/slideraction.h"
+#include "generic/slideraction.h"
 
+#include <QCheckBox>
+#include <QComboBox>
+#include <QFormLayout>
+#include <QSpinBox>
 #include <QPlainTextEdit>
 #include <QFileDialog>
 #include <QSettings>

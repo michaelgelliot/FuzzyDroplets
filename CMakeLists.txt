@@ -186,8 +186,6 @@ else()
     endif()
 endif()
 
-target_include_directories(FuzzyDroplets PRIVATE ${CMAKE_SOURCE_DIR})
-
 # Todo: Concurrent only necessary on macos
 target_link_libraries(FuzzyDroplets PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Concurrent)
 

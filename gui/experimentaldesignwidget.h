@@ -4,10 +4,10 @@
 #include <QDialog>
 #include "plot/scatterplotbox2.h"
 #include "plot/textmarker.h"
-#include "core/design.h"
+#include "../core/design.h"
 #include "plot/ringmarker.h"
-#include "gui/generic/commandstack.h"
-#include "core/fuzzycolor.h"
+#include "generic/commandstack.h"
+#include "../core/fuzzycolor.h"
 
 class QFormLayout;
 class QSpinBox;

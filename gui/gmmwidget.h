@@ -2,8 +2,8 @@
 #define GMMWIDGET_H
 
 #include "emclustermethodwidget.h"
-#include "core/emclustering.h"
-#include "core/binormal.h"
+#include "../core/emclustering.h"
+#include "../core/binormal.h"
 
 class QCheckBox;
 class QButtonGroup;

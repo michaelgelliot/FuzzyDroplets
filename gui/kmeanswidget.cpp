@@ -2,7 +2,7 @@
 #include <QGroupBox>
 #include <QFormLayout>
 #include <QDoubleSpinBox>
-#include "core/kmeans.h"
+#include "../core/kmeans.h"
 #include "emworker.h"
 #include <QComboBox>
 

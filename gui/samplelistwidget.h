@@ -1,7 +1,7 @@
 #ifndef FUZZYDROPLETS_GUI_SAMPLELISTWIDGET_H
 #define FUZZYDROPLETS_GUI_SAMPLELISTWIDGET_H
 
-#include "core/data.h"
+#include "../core/data.h"
 #include "generic/command.h"
 #include <QWidget>
 #include <QTemporaryFile>

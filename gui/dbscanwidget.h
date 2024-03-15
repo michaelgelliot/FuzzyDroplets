@@ -1,8 +1,7 @@
 #ifndef DBSCANWIDGET_H
 #define DBSCANWIDGET_H
 
-#include "gui/clustermethodwidget.h"
-#include "core/vectorqueue.h"
+#include "clustermethodwidget.h"
 
 class Data;
 class DropletGraphWidget;

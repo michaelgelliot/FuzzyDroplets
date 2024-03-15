@@ -2,7 +2,7 @@
 #define FUZZYDROPLETS_GUI_DROPLETGRAPHWIDGET_H
 
 #include "plot/scatterplotbox2.h"
-#include "gui/generic/command.h"
+#include "generic/command.h"
 
 class Data;
 class PointCloud;

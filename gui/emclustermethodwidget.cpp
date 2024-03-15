@@ -1,8 +1,8 @@
 #include "emclustermethodwidget.h"
-#include "core/centroids.h"
-#include "gui/dropletgraphwidget.h"
-#include "gui/generic/themedicon.h"
-#include "gui/plot/ringmarker.h"
+#include "../core/centroids.h"
+#include "dropletgraphwidget.h"
+#include "generic/themedicon.h"
+#include "plot/ringmarker.h"
 #include "emworker.h"
 #include <QFormLayout>
 #include <QSpinBox>

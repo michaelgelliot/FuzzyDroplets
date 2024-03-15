@@ -2,7 +2,7 @@
 #define GMMASSIGNMENTWIDGET_H
 
 #include "assignmentmethodwidget.h"
-#include "core/binormal.h"
+#include "../core/binormal.h"
 
 class Data;
 class QCheckBox;

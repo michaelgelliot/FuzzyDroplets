@@ -1,9 +1,9 @@
 #ifndef EMCLUSTERMETHODWIDGET_H
 #define EMCLUSTERMETHODWIDGET_H
 
-#include "gui/clustermethodwidget.h"
-#include "core/geometry.h"
-#include "core/centroids.h"
+#include "clustermethodwidget.h"
+#include "../core/geometry.h"
+#include "../core/centroids.h"
 
 class Data;
 class DropletGraphWidget;

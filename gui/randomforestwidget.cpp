@@ -1,10 +1,10 @@
 #include "randomforestwidget.h"
 #include <QFormLayout>
 #include <QThread>
-#include "core/data.h"
-#include "ranger/ForestClassification.h"
-#include "ranger/ForestProbability.h"
-#include "ranger/globals.h"
+#include "../core/data.h"
+#include "../ranger/ForestClassification.h"
+#include "../ranger/ForestProbability.h"
+#include "../ranger/globals.h"
 #include <fstream>
 #include <QFile>
 #include <QTextStream>

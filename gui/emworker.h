@@ -2,7 +2,7 @@
 #define FUZZYDROPLETS_GUI_CLUSTERING_EMWORKER_H
 
 #include <QObject>
-#include "core/emclustering.h"
+#include "../core/emclustering.h"
 
 class Data;
 

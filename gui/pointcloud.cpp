@@ -4,10 +4,10 @@
 #include <QPaintEngine>
 #include <execution>
 #include <ranges>
-#include "core/colorscheme.h"
-#include "core/data.h"
-#include "core/quadtree.h"
-#include "qpainterpath.h"
+#include "../core/colorscheme.h"
+#include "../core/data.h"
+#include "../core/quadtree.h"
+#include <QPainterPath>
 #include <QtGlobal>
 
 #ifdef Q_OS_MACOS

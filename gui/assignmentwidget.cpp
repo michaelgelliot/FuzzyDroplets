@@ -7,7 +7,7 @@
 #include "generic/stackedwidget.h"
 #include "generic/launchwidget.h"
 #include "generic/commandstack.h"
-#include "core/data.h"
+#include "../core/data.h"
 #include "dropletgraphwidget.h"
 #include <QBoxLayout>
 #include <QProgressBar>

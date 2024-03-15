@@ -2,8 +2,8 @@
 #include <QFormLayout>
 #include <QThread>
 #include <QCheckBox>
-#include "core/data.h"
-#include "core/mean.h"
+#include "../core/data.h"
+#include "../core/mean.h"
 
 #ifdef Q_OS_MACOS
 #include <QtConcurrent>

@@ -2,7 +2,7 @@
 #define FUZZYDROPLETS_GUI_FASTPOINTCLOUD_H
 
 #include "plot/continuousaxis.h"
-#include "core/geometry.h"
+#include "../core/geometry.h"
 
 class Data;
 template <typename T> class QuadTree;

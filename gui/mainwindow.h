@@ -2,7 +2,7 @@
 #define FUZZY_DROPLETS_MAINWINDOW_H
 
 #include <QMainWindow>
-#include "gui/plot/axis.h"
+#include "plot/axis.h"
 
 class Data;
 class CommandStack;

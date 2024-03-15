@@ -2,8 +2,8 @@
 #define FUZZYDROPLETS_GUI_ASSIGNMENTMETHODWIDGET_H
 
 #include <QWidget>
-#include "core/geometry.h"
-#include "core/quadtree.h"
+#include "../core/geometry.h"
+#include "../core/quadtree.h"
 
 class Droplet;
 class Data;

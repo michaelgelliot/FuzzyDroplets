@@ -1,10 +1,10 @@
 #include "dropletgraphwidget.h"
-#include "core/colorscheme.h"
-#include "gui/generic/commandstack.h"
-#include "gui/plot/polygon.h"
+#include "../core/colorscheme.h"
+#include "generic/commandstack.h"
+#include "plot/polygon.h"
 #include "pointcloud.h"
-#include "core/data.h"
-#include "gui/generic/themedicon.h"
+#include "../core/data.h"
+#include "generic/themedicon.h"
 #include <QContextMenuEvent>
 #include <QMenu>
 #include <QPainter>

@@ -1,8 +1,8 @@
 #ifndef PAINTINGWIDGET_H
 #define PAINTINGWIDGET_H
 
-#include "core/fuzzycolor.h"
-#include "gui/generic/command.h"
+#include "../core/fuzzycolor.h"
+#include "generic/command.h"
 #include <QWidget>
 class CommandStack;
 class DropletGraphWidget;

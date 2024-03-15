@@ -2,8 +2,8 @@
 #define FUZZYDROPLETS_GUI_CLUSTERINGWIDGET_H
 
 #include <QWidget>
-#include "gui/generic/command.h"
-#include "core/fuzzycolor.h"
+#include "generic/command.h"
+#include "../core/fuzzycolor.h"
 
 class StackedWidget;
 class LaunchWidget;
